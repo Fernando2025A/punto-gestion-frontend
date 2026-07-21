@@ -1,77 +1,80 @@
-# React + TypeScript + Vite
+# 📊 Punto Gestión
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A modern web-based inventory and stock management system designed to streamline product tracking, inbound/outbound movements, and key business analytics.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+* **Interactive Dashboard:** Real-time business overview featuring metrics like total products, inventory valuation, critical stock alerts, and weekly trends.
+* **Inventory Control:** Complete tracking of inbound/outbound stock movements and automated alerts for **low stock** items.
+* **Authentication Flow:** Built-in sign-in (*Username/Password* & Google integration) and user registration for secure access.
+* **Modern Dark UI:** Clean, responsive, and easy-to-read interface optimized for quick data visualization.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+* **Frontend:** [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+* **Bundler & Build Tool:** [Vite](https://vitejs.dev/)
+* **Icons:** [Lucide React](https://lucide.dev/)
+* **Routing:** [React Router](https://reactrouter.com/)
+* **Styling:** Native CSS3 (CSS Variables & Responsive Design)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 💻 Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Ensure you have the following installed locally:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+* [Node.js](https://nodejs.org/) (v18 or higher recommended)
+* `npm` or `yarn`
 
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚙️ Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/punto-gestion.git](https://github.com/your-username/punto-gestion.git)
+   cd punto-gestion
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
-```
+## Install Dependencies
+  Bash
+  npm i
+
+---
+
+## Environment Variables:
+  Create a .env file in the root directory based on .env.example (or set your backend API URL):
+  VITE_API_URL=http://localhost:3000
+
+---
+
+## Run the development server:
+
+Bash
+npm run dev
+
+---
+
+## Available ScriptsIn the project directory, you can run:
+Command         Description
+npm run dev     Starts the local development server with HMR.
+npm run build   Bundles the app into static files for production in the dist folder.
+npm run preview Locally previews the production build.
+npm run lint    Runs ESLint to inspect and catch code issues.
+
+## Project Structure
+punto-gestion/
+├── src/
+│   ├── components/      # Reusable UI components
+│   ├── pages/           # Application views (Login, Register, Dashboard, etc.)
+│   ├── assets/          # Static assets, images, and icons
+│   ├── App.tsx          # Main routing & application configuration
+│   └── main.tsx         # React entry point
+├── .env                 # Local environment variables
+├── package.json         # Project dependencies and scripts
+└── README.md            # Project documentation
