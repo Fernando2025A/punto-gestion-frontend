@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { BarChart2, User, Lock, Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 export function Login() {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const redirect = (path: string) => {
@@ -28,14 +30,13 @@ export function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos de inicio de sesión:", { ...formData, rememberMe });
 
     try {
       const response = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: {
-          "Content-Type": "application/json", // <-- Importante para enviar JSON correctamente
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: formData.username,
@@ -44,9 +45,12 @@ export function Login() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+
+        // Guardamos los datos del usuario en el contexto
+        login({ username: data.username, email: data?.email, id: data.id });
+
         redirect("home");
-      } else {
-        alert("Credenciales inválidas");
       }
     } catch (error) {
       console.error("Error al conectar con el servidor:", error);
@@ -68,7 +72,10 @@ export function Login() {
         </div>
         <div className="header-right">
           <span className="header-text">¿No tienes cuenta?</span>
-          <button onClick={() => redirect("register")} className="btn-header-register">
+          <button
+            onClick={() => redirect("register")}
+            className="btn-header-register"
+          >
             Registrarse
           </button>
         </div>
@@ -84,7 +91,8 @@ export function Login() {
             </div>
             <h1 className="card-title">Iniciar sesión</h1>
             <p className="card-subtitle">
-              Bienvenido de nuevo. Inicia sesión para continuar gestionando tu negocio.
+              Bienvenido de nuevo. Inicia sesión para continuar gestionando tu
+              negocio.
             </p>
           </div>
 

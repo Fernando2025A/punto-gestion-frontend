@@ -1,15 +1,8 @@
 import {
-  BarChart2,
-  Home,
   Package,
   ArrowDownRight,
   ArrowUpRight,
-  ArrowLeftRight,
-  Tags,
-  Users,
   TrendingUp,
-  Settings,
-  LogOut,
   Bell,
   ChevronDown,
   ShoppingBag,
@@ -23,29 +16,93 @@ import {
   Monitor,
 } from "lucide-react";
 import "./Dashboard.css";
-import { useEffect } from "react";
+import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { LogoutModal } from "../../components/LogoutModal/LogoutModal";
+import {
+  ProductModal,
+  type ProductFormData,
+} from "../../components/ProductModal/ProductModal";
+import { Toast } from "../../components/Toast/Toast";
 import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  // Estado para la notificación
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const redirect = () => {
-      navigate("/");
-    };
-    const verify = async () => {
-      const res = await fetch(`${apiUrl}/auth/me`, {
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success",
+  ) => {
+    setToast({ show: true, message, type });
+  };
+
+  const handleCreateProduct = async (
+    data: ProductFormData,
+    options: { keepOpen: boolean; keepData: boolean },
+  ) => {
+    setIsSaving(true);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const response = await fetch(`${apiUrl}/products`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        showToast("¡Producto creado con éxito!", "success");
+        if (!options.keepOpen) {
+        setIsModalOpen(false);
+      }
+
+      // Retornamos true para indicar éxito
+      return true;
+      } else {
+        showToast("No se pudo crear el producto.", "error");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al enviar el producto:", error);
+      showToast("Error al conectar con el servidor", "error");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch(`${apiUrl}/auth/logout`, {
+        method: "POST",
         credentials: "include",
       });
-      if (!res.ok) {
-        redirect();
-      } else {
-        console.log("Usuario autenticado correctamente");
-      }
-    };
-    verify();
-  }, [apiUrl, navigate]);
+    } catch (error) {
+      console.error("Error al cerrar sesión en el servidor:", error);
+    } finally {
+      // 2. Limpiar estado local, cerrar modal y redirigir
+      logout();
+      setIsLoggingOut(false);
+      setIsModalOpen(false);
+      navigate("/", { replace: true });
+    }
+  };
 
   // Datos mock para "Stock bajo"
   const lowStockItems = [
@@ -88,66 +145,28 @@ export function Dashboard() {
 
   return (
     <div className="dashboard-layout">
-      {/* Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <BarChart2 className="logo-icon" size={24} />
-          <span className="logo-text">Punto Gestión</span>
-        </div>
+      <Toast
+        isOpen={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
+      
 
-        <nav className="sidebar-nav">
-          <a href="#inicio" className="nav-item active">
-            <Home size={18} />
-            <span>Inicio</span>
-          </a>
-          <a href="#productos" className="nav-item">
-            <Package size={18} />
-            <span>Productos</span>
-          </a>
-          <a href="#entradas" className="nav-item">
-            <ArrowDownRight size={18} />
-            <span>Entradas</span>
-          </a>
-          <a href="#salidas" className="nav-item">
-            <ArrowUpRight size={18} />
-            <span>Salidas</span>
-          </a>
-          <a href="#movimientos" className="nav-item">
-            <ArrowLeftRight size={18} />
-            <span>Movimientos</span>
-          </a>
-          <a href="#categorias" className="nav-item">
-            <Tags size={18} />
-            <span>Categorías</span>
-          </a>
-          <a href="#proveedores" className="nav-item">
-            <Users size={18} />
-            <span>Proveedores</span>
-          </a>
-          <a href="#reportes" className="nav-item">
-            <TrendingUp size={18} />
-            <span>Reportes</span>
-          </a>
-          <a href="#configuracion" className="nav-item">
-            <Settings size={18} />
-            <span>Configuración</span>
-          </a>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="nav-item logout-btn">
-            <LogOut size={18} />
-            <span>Cerrar sesión</span>
-          </button>
-        </div>
-      </aside>
-
+      {isModalOpen && (
+        <ProductModal
+          isOpen={isProductModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleCreateProduct}
+          isLoading={isSaving}
+        />
+      )}
       {/* Main Container */}
       <div className="main-wrapper">
         {/* Top Header */}
         <header className="top-header">
           <div className="header-titles">
-            <h1>¡Bienvenido, Administrador!</h1>
+            <h1>¡Bienvenido, {user?.username || "Administrador"}!</h1>
             <p>Aquí tienes un resumen de tu negocio.</p>
           </div>
 
@@ -361,7 +380,10 @@ export function Dashboard() {
           <section className="quick-actions-section">
             <h3>Acciones rápidas</h3>
             <div className="actions-grid">
-              <button className="action-card">
+              <button
+                className="action-card"
+                onClick={() => setIsProductModalOpen(true)}
+              >
                 <div className="action-icon-wrapper blue">
                   <PlusCircle size={22} />
                 </div>
@@ -412,6 +434,18 @@ export function Dashboard() {
           </section>
         </main>
       </div>
+      <ProductModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        onSubmit={handleCreateProduct}
+        isLoading={isSaving}
+      />
+      <LogoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+        isLoggingOut={isLoggingOut}
+      />
     </div>
   );
 }

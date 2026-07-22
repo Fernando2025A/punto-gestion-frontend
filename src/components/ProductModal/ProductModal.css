@@ -1,0 +1,259 @@
+.product-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.product-modal-container {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalScaleUp 0.2s ease-out;
+  box-sizing: border-box;
+}
+
+.product-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.product-modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-modal-icon-bg {
+  width: 44px;
+  height: 44px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.product-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.product-modal-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.product-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.product-modal-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.product-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.product-form-row .product-form-group {
+  flex: 1;
+}
+
+.product-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.product-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.product-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.product-input-wrapper input,
+.product-select {
+  width: 100%;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.product-select {
+  padding-left: 14px;
+  cursor: pointer;
+}
+
+.product-input-wrapper input:focus,
+.product-select:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.product-input-wrapper input.input-error {
+  border-color: #ef4444;
+}
+
+.error-text {
+  font-size: 0.775rem;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+.product-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-product-cancel,
+.btn-product-submit {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-product-cancel {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.btn-product-cancel:hover:not(:disabled) {
+  background-color: #e2e8f0;
+}
+
+.btn-product-submit {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.btn-product-submit:hover:not(:disabled) {
+  background-color: #0369a1;
+}
+
+.btn-product-cancel:disabled,
+.btn-product-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sección de Checkboxes Opciones */
+.product-modal-options {
+  display: flex;
+  gap: 16px;
+  background-color: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-top: 4px;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.825rem;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0284c7;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .product-form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .product-modal-options {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
