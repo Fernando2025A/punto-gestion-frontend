@@ -1,3 +1,4 @@
+/* ==================== ESTILOS DESKTOP ==================== */
 .sidebar {
   width: 260px;
   flex-shrink: 0;
@@ -10,10 +11,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  z-index: 100;
 }
 
 .sidebar-header {
   padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-wrapper {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -28,6 +36,22 @@
   font-size: 1.125rem;
 }
 
+.menu-toggle-btn {
+  display: none; /* Oculto en pantallas grandes */
+  background: transparent;
+  border: none;
+  color: var(--text-white, #ffffff);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -38,7 +62,7 @@
 
 .sidebar-footer {
   padding: 1rem 0.75rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color, #1e293b);
 }
 
 .nav-item {
@@ -76,4 +100,50 @@
 .logout-btn:hover {
   color: #f87171;
   background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* ==================== ESTILOS MOBILE (PANTALLAS PEQUEÑAS) ==================== */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #1e293b);
+  }
+
+  .menu-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* El contenido de navegación inicia oculto */
+  .sidebar-content {
+    display: none;
+    background-color: #000000;
+    padding-bottom: 0.5rem;
+    border-top: 1px solid var(--border-color, #1e293b);
+  }
+
+  /* Al presionar el botón agregamos .is-open para mostrar las opciones */
+  .sidebar.is-open .sidebar-content {
+    display: flex;
+    animation: slideDown 0.25s ease-out forwards;
+  }
+
+  .sidebar-nav {
+    padding: 0.75rem;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

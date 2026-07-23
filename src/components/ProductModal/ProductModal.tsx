@@ -15,11 +15,11 @@ export type ProductCategory =
 export interface ProductFormData {
   name: string;
   price: number | "";
+  purchasePrice: number | "";
   stock: number | "";
   category: ProductCategory;
 }
 
-// Opciones adicionales para controlar el comportamiento tras guardar
 export interface ProductSubmitOptions {
   keepOpen: boolean;
   keepData: boolean;
@@ -60,6 +60,7 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
 const INITIAL_FORM: ProductFormData = {
   name: "",
   price: "",
+  purchasePrice: "",
   stock: "",
   category: "FOOD",
 };
@@ -71,9 +72,10 @@ export function ProductModal({
   isLoading = false,
 }: ProductModalProps) {
   const [formData, setFormData] = useState<ProductFormData>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
-  
-  // Estados para las dos nuevas opciones
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ProductFormData, string>>
+  >({});
+
   const [keepOpen, setKeepOpen] = useState(false);
   const [keepData, setKeepData] = useState(false);
 
@@ -87,7 +89,7 @@ export function ProductModal({
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "price" || name === "stock"
+        name === "price" || name === "purchasePrice" || name === "stock"
           ? value === ""
             ? ""
             : Number(value)
@@ -110,6 +112,10 @@ export function ProductModal({
       newErrors.price = "El precio debe ser mayor a 0.";
     }
 
+    if (formData.purchasePrice === "" || Number(formData.purchasePrice) <= 0) {
+      newErrors.purchasePrice = "El precio de compra debe ser mayor a 0.";
+    }
+
     if (formData.stock === "" || Number(formData.stock) < 0) {
       newErrors.stock = "El stock debe ser igual o mayor a 0.";
     }
@@ -122,12 +128,15 @@ export function ProductModal({
     e.preventDefault();
     if (!validate()) return;
 
-    // Enviamos los datos y las opciones al padre
     const success = await onSubmit(formData, { keepOpen, keepData });
 
-    // Si la petición fue exitosa, aplicamos las reglas de "limpiar"
-    if (success !== false && !keepData) {
-      setFormData(INITIAL_FORM);
+    if (success !== false) {
+      if (!keepData) {
+        setFormData(INITIAL_FORM);
+      }
+      if (!keepOpen) {
+        onClose();
+      }
     }
   };
 
@@ -186,10 +195,10 @@ export function ProductModal({
             {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
 
-          {/* Precio y Stock */}
+          {/* Precios y Stock */}
           <div className="product-form-row">
             <div className="product-form-group">
-              <label htmlFor="price">Precio ($)</label>
+              <label htmlFor="price">Precio de venta ($)</label>
               <div className="product-input-wrapper">
                 <DollarSign size={18} className="product-input-icon" />
                 <input
@@ -205,7 +214,31 @@ export function ProductModal({
                   className={errors.price ? "input-error" : ""}
                 />
               </div>
-              {errors.price && <span className="error-text">{errors.price}</span>}
+              {errors.price && (
+                <span className="error-text">{errors.price}</span>
+              )}
+            </div>
+
+            <div className="product-form-group">
+              <label htmlFor="purchasePrice">Precio de compra ($)</label>
+              <div className="product-input-wrapper">
+                <DollarSign size={18} className="product-input-icon" />
+                <input
+                  type="number"
+                  id="purchasePrice"
+                  name="purchasePrice"
+                  placeholder="1800"
+                  min="0"
+                  step="0.01"
+                  value={formData.purchasePrice}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  className={errors.purchasePrice ? "input-error" : ""}
+                />
+              </div>
+              {errors.purchasePrice && (
+                <span className="error-text">{errors.purchasePrice}</span>
+              )}
             </div>
 
             <div className="product-form-group">
@@ -225,7 +258,9 @@ export function ProductModal({
                   className={errors.stock ? "input-error" : ""}
                 />
               </div>
-              {errors.stock && <span className="error-text">{errors.stock}</span>}
+              {errors.stock && (
+                <span className="error-text">{errors.stock}</span>
+              )}
             </div>
           </div>
 
@@ -250,7 +285,7 @@ export function ProductModal({
             </div>
           </div>
 
-          {/* Opciones adicionales: No cerrar / No limpiar */}
+          {/* Opciones adicionales */}
           <div className="product-modal-options">
             <label className="checkbox-option">
               <input

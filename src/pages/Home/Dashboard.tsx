@@ -16,7 +16,7 @@ import {
   Monitor,
 } from "lucide-react";
 import "./Dashboard.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { LogoutModal } from "../../components/LogoutModal/LogoutModal";
 import {
@@ -32,6 +32,11 @@ export function Dashboard() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [resume, setResume] = useState({
+    totalProducts: 0,
+    totalStock: 0,
+    totalValue: 0,
+  })
   // Estado para la notificación
   const [toast, setToast] = useState<{
     show: boolean;
@@ -45,6 +50,16 @@ export function Dashboard() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const getResume = async () => {
+      const response = await fetch(`${apiUrl}/inventory`, {
+        credentials: "include",
+      });
+      const data = await response.json();
+      setResume(data);
+    }
+    getResume();
+  }, [apiUrl])
   const showToast = (
     message: string,
     type: "success" | "error" = "success",
@@ -58,7 +73,6 @@ export function Dashboard() {
   ) => {
     setIsSaving(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
       const response = await fetch(`${apiUrl}/products`, {
         method: "POST",
         credentials: "include",
@@ -166,18 +180,18 @@ export function Dashboard() {
         {/* Top Header */}
         <header className="top-header">
           <div className="header-titles">
-            <h1>¡Bienvenido, {user?.username || "Administrador"}!</h1>
+            <h1>¡Bienvenido, {user?.username}!</h1>
             <p>Aquí tienes un resumen de tu negocio.</p>
           </div>
 
           <div className="header-actions">
             <div className="notification-icon">
               <Bell size={20} />
-              <span className="badge">2</span>
+              <span className="badge">5</span>
             </div>
             <div className="user-profile">
               <div className="avatar">AD</div>
-              <span className="user-name">Administrador</span>
+              <span className="user-name">{user?.username}</span>
               <ChevronDown size={16} />
             </div>
           </div>
@@ -196,10 +210,7 @@ export function Dashboard() {
                 <span className="metric-title">Productos</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">1,248</h2>
-                <span className="metric-change positive">
-                  ↑ 12% <small>vs mes anterior</small>
-                </span>
+                <h2 className="metric-value">{resume?.totalProducts}</h2>
               </div>
             </div>
 
@@ -212,10 +223,7 @@ export function Dashboard() {
                 <span className="metric-title">Stock total</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">5,786</h2>
-                <span className="metric-change positive">
-                  ↑ 8% <small>vs mes anterior</small>
-                </span>
+                <h2 className="metric-value">{resume?.totalStock}</h2>
               </div>
             </div>
 
@@ -229,9 +237,6 @@ export function Dashboard() {
               </div>
               <div className="metric-body">
                 <h2 className="metric-value">24</h2>
-                <span className="metric-change positive">
-                  ↑ 14% <small>vs ayer</small>
-                </span>
               </div>
             </div>
 
@@ -244,10 +249,7 @@ export function Dashboard() {
                 <span className="metric-title">Valor de inventario</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">$ 2.450.000</h2>
-                <span className="metric-change positive">
-                  ↑ 9% <small>vs mes anterior</small>
-                </span>
+                <h2 className="metric-value">${resume?.totalValue.toLocaleString()}</h2>
               </div>
             </div>
           </section>

@@ -1,12 +1,29 @@
+/* Layout Principal */
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #000000;
+  width: 100%;
+  background-color: var(--bg-main, #090d16); /* Ajusta al color de fondo de tu app */
 }
 
+/* Área de contenido principal */
 .main-content {
-  flex: 1;
-  padding: 0;
+  flex-grow: 1;
+  padding: 1.5rem;
   overflow-y: auto;
-  min-width: 0; /* Previene desbordamiento en tablas/gráficos */
+  min-width: 0; /* Previene que tablas o elementos anchos rompan el flexbox */
+}
+
+/* ==================== ADAPTACIÓN MOBILE ==================== */
+@media (max-width: 768px) {
+  .app-layout {
+    /* Cambiamos la dirección para que el header/sidebar quede arriba y el contenido abajo */
+    flex-direction: column; 
+  }
+
+  .main-content {
+    padding: 1rem;
+    /* Evita que el scroll sea incómodo en teléfonos */
+    overflow-y: visible; 
+  }
 }
