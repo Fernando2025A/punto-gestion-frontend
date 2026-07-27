@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import "./ProductsPage.css";
 import { DeleteProductModal } from "../DeleteProductModal/DeleteProductModal";
+import { EditProductModal } from "../EditProductModal/EditProductModal";
+import type { ProductFormData } from "../ProductModal/ProductModal";
 
 export type ProductCategory =
   | "ELECTRONICS"
@@ -63,11 +65,20 @@ export function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(8);
 
+  //const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [productToEdit, setProductTotEdit] = useState<ProductFormData | null>(
+    null,
+  );
+  const [updating, setIsUpdating] = useState(false);
+
+  const [editModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleDeleteProduct = async (productId: number) => {
     setIsDeleting(true);
@@ -83,7 +94,7 @@ export function ProductsPage() {
 
       // Actualización local: Remover el producto de la lista
       setProducts((prev) => prev.filter((p) => p.id !== productId));
-      
+
       // Cerrar modal
       setProductToDelete(null);
     } catch (err: any) {
@@ -92,6 +103,56 @@ export function ProductsPage() {
       setIsDeleting(false);
     }
   };
+
+ const handleUpdateProduct = async (formData: ProductFormData) => {
+  setIsUpdating(true);
+
+  if (!productToEdit?.id) {
+    setIsUpdating(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiUrl}/products/${productToEdit.id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData?.name,
+        price: Number(formData?.price),
+        stock: Number(formData?.stock),
+        category: formData?.category,
+        purchasePrice: Number(formData?.purchasePrice),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Error al actualizar el producto");
+    }
+
+    const updatedProduct = await response.json();
+
+    // 1. ACTUALIZAR ESTADO LOCAL: Reemplazamos el producto actualizado en la lista
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+      )
+    );
+
+    // 2. CERRAR MODAL Y LIMPIAR
+    setIsEditModalOpen(false);
+    setProductTotEdit(null);
+
+  } catch (error: any) {
+    console.error("Error en handleUpdateProduct:", error);
+    alert(error.message || "No se pudo actualizar el producto");
+  } finally {
+    setIsUpdating(false);
+  }
+};
   // --- Fetching de Datos Reales de la API ---
   useEffect(() => {
     const fetchProducts = async () => {
@@ -113,7 +174,7 @@ export function ProductsPage() {
           `${apiUrl}/products?${params.toString()}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -133,9 +194,13 @@ export function ProductsPage() {
     fetchProducts();
   }, [currentPage, limit, selectedCategory, apiUrl]);
 
+  const setEditConfig = (product: ProductFormData, isOpen: boolean) => {
+    setProductTotEdit(product);
+    setIsEditModalOpen(isOpen);
+  };
   // Filtrado local solo por término de búsqueda en pantalla
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Helper para renderizar icono e información según categoría
@@ -272,11 +337,30 @@ export function ProductsPage() {
 
                   {/* Acciones */}
                   <div className="card-actions">
-                    <button className="btn-action edit">
+                    <button
+                      onClick={() =>
+                        setEditConfig(
+                          {
+                            id: product.id,
+                            category: product.category,
+                            name: product.name,
+                            price: product.price,
+                            purchasePrice:
+                              product?.purchasePrice ?? product.price,
+                            stock: product.stock,
+                          },
+                          !editModalOpen,
+                        )
+                      }
+                      className="btn-action edit"
+                    >
                       <Pencil size={15} />
                       <span>Editar</span>
                     </button>
-                    <button className="btn-action delete" onClick={() => setProductToDelete(product)}>
+                    <button
+                      className="btn-action delete"
+                      onClick={() => setProductToDelete(product)}
+                    >
                       <Trash2 size={15} />
                       <span>Eliminar</span>
                     </button>
@@ -311,7 +395,7 @@ export function ProductsPage() {
               >
                 {pageNum}
               </button>
-            )
+            ),
           )}
 
           <button
@@ -319,7 +403,7 @@ export function ProductsPage() {
             disabled={currentPage >= pagination.totalPages || loading}
             onClick={() =>
               setCurrentPage((prev) =>
-                Math.min(prev + 1, pagination.totalPages)
+                Math.min(prev + 1, pagination.totalPages),
               )
             }
           >
@@ -347,6 +431,14 @@ export function ProductsPage() {
         onClose={() => setProductToDelete(null)}
         onConfirm={handleDeleteProduct}
         isDeleting={isDeleting}
+      />
+      <EditProductModal
+        key={productToEdit?.id}
+        isOpen={editModalOpen}
+        onSubmit={handleUpdateProduct}
+        product={productToEdit}
+        onClose={() => setIsEditModalOpen(false)}
+        isLoading={updating}
       />
     </div>
   );

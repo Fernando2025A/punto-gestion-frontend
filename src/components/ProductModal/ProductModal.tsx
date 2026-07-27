@@ -13,6 +13,7 @@ export type ProductCategory =
   | "OTHERS";
 
 export interface ProductFormData {
+  id?: number;
   name: string;
   price: number | "";
   purchasePrice: number | "";

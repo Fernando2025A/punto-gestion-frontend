@@ -25,18 +25,23 @@ import {
 } from "../../components/ProductModal/ProductModal";
 import { Toast } from "../../components/Toast/Toast";
 import { useNavigate } from "react-router-dom";
+import { StockExitModal } from "../../components/StockExitModal/StockExitModal";
 
 export function Dashboard() {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
   const [resume, setResume] = useState({
     totalProducts: 0,
     totalStock: 0,
     totalValue: 0,
   })
+
+  const [stockExitModal, setIsStockExitModal] = useState(false);
   // Estado para la notificación
   const [toast, setToast] = useState<{
     show: boolean;
@@ -409,7 +414,7 @@ export function Dashboard() {
                 </div>
               </button>
 
-              <button className="action-card">
+              <button onClick={() => setIsStockExitModal(true)} className="action-card">
                 <div className="action-icon-wrapper purple">
                   <ArrowUpRight size={22} />
                 </div>
@@ -447,6 +452,11 @@ export function Dashboard() {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmLogout}
         isLoggingOut={isLoggingOut}
+      />
+      <StockExitModal
+        isOpen={stockExitModal}
+        onClose={() => setIsStockExitModal(false)}
+
       />
     </div>
   );

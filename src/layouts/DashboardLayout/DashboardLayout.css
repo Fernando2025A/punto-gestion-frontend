@@ -17,13 +17,14 @@
 /* ==================== ADAPTACIÓN MOBILE ==================== */
 @media (max-width: 768px) {
   .app-layout {
-    /* Cambiamos la dirección para que el header/sidebar quede arriba y el contenido abajo */
-    flex-direction: column; 
+    flex-direction: column;
+    width: 100%;
   }
 
   .main-content {
-    padding: 1rem;
-    /* Evita que el scroll sea incómodo en teléfonos */
-    overflow-y: visible; 
+    width: 100%;
+    box-sizing: border-box; /* Evita que el padding genere scroll horizontal */
+    padding: 1rem; /* Ajusta según el padding que prefieras en móvil */
+    overflow-y: visible;
   }
 }

@@ -1,7 +1,7 @@
-type Props = {}
+import { SettingsPage } from "../../components/SettingsPage/SettingsPage";
 
-export function Settings({}: Props) {
+export function Settings() {
   return (
-    <div>Settings</div>
+      <SettingsPage />
   )
 }
