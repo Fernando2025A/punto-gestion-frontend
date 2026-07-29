@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./StockExitModal.css";
+import { Toast } from "../Toast/Toast";
+import { useToast } from "../../hooks/useToast";
 
 // Interface para el modelo de Producto
 export interface Product {
@@ -8,6 +10,10 @@ export interface Product {
   stock: number;
   price: number;
   category?: string;
+}
+
+interface ProductsResponse {
+  data: Product[];
 }
 
 // Props necesarias para integrarlo en tu página
@@ -25,6 +31,8 @@ export function StockExitModal({
   onClose,
   onSubmit,
 }: StockExitModalProps) {
+
+  const { showToast } = useToast();
   // Estados de productos
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -64,24 +72,16 @@ export function StockExitModal({
           throw new Error("Error al obtener los productos");
         }
 
-        const responseJson: Product[] = await res.json();
-        const productsArray = Array.isArray(responseJson.data)
-          ? responseJson.data
-          : [];
+        const responseJson: ProductsResponse = await res.json();
 
-        setProducts(productsArray);
+        setProducts(responseJson.data);
       } catch (err: any) {
         setError(err.message || "No se pudieron cargar los productos");
       } finally {
         setLoading(false);
       }
     };
-
-    if (API_URL) {
-      fetchProducts();
-    } else {
-      setError("No se ha configurado la variable VITE_API_URL en el entorno");
-    }
+    fetchProducts();
   }, [isOpen]);
 
   // 2. Filtro en tiempo real por nombre
@@ -104,19 +104,20 @@ export function StockExitModal({
     e.preventDefault();
 
     if (!selectedProduct) {
-      alert("Por favor selecciona un producto.");
+      showToast("Por favor selecciona un producto.", "error");
       return;
     }
 
     const qtyNumber = Number(quantity);
     if (!qtyNumber || qtyNumber <= 0) {
-      alert("Ingresa una cantidad válida mayor a 0.");
+      showToast("Ingresa una cantidad válida mayor a 0.");
       return;
     }
 
     if (qtyNumber > selectedProduct.stock) {
-      alert(
+      showToast(
         `La cantidad excede el stock disponible (${selectedProduct.stock}).`,
+        "error"
       );
       return;
     }
@@ -124,20 +125,18 @@ export function StockExitModal({
     try {
       setSubmitting(true);
 
-      const response = await fetch(
-        `${API_URL}/products/${selectedProduct.id}/exit`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            quantity: qtyNumber,
-            reason: reason.trim(),
-          }),
+      const response = await fetch(`${API_URL}/products/stock-exit`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          quantity: qtyNumber,
+          productId: selectedProduct.id,
+          reason: reason.trim(),
+        }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -149,10 +148,13 @@ export function StockExitModal({
         onSubmit(selectedProduct, qtyNumber, reason.trim());
       }
 
-      alert("Salida de stock registrada con éxito");
+      showToast("Salida de stock registrada con éxito", "success");
       onClose(); // Cerrar el modal al finalizar
     } catch (err: any) {
-      alert(err.message || "Ocurrió un error al procesar la salida");
+      showToast(
+        err.message || "Ocurrió un error al procesar la salida",
+        "error",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -160,7 +162,6 @@ export function StockExitModal({
 
   // Si el modal no está abierto, no renderizar nada
   if (!isOpen) return null;
-
   return (
     <div className="dark-modal-overlay" onClick={onClose}>
       <div

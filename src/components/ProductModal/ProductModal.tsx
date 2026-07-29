@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { X, PackagePlus, DollarSign, Layers, Tag } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { X, PackagePlus, DollarSign, Layers, Tag, Truck, Calendar } from "lucide-react";
+import { SupplierSelect } from "../SupplierSelect/SupplierSelect";
 import "./ProductModal.css";
 
 export type ProductCategory =
@@ -19,6 +20,8 @@ export interface ProductFormData {
   purchasePrice: number | "";
   stock: number | "";
   category: ProductCategory;
+  supplierId?: number;
+  expirationDate?: string; // 👈 Campo opcional para fecha de vencimiento
 }
 
 export interface ProductSubmitOptions {
@@ -64,6 +67,8 @@ const INITIAL_FORM: ProductFormData = {
   purchasePrice: "",
   stock: "",
   category: "FOOD",
+  supplierId: undefined,
+  expirationDate: "",
 };
 
 export function ProductModal({
@@ -72,7 +77,21 @@ export function ProductModal({
   onSubmit,
   isLoading = false,
 }: ProductModalProps) {
+  // 🔒 Bloquear el scroll del cuerpo de la página cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   const [formData, setFormData] = useState<ProductFormData>(INITIAL_FORM);
+  const [showSupplier, setShowSupplier] = useState<boolean>(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProductFormData, string>>
   >({});
@@ -87,19 +106,42 @@ export function ProductModal({
   ) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "price" || name === "purchasePrice" || name === "stock"
-          ? value === ""
-            ? ""
-            : Number(value)
-          : value,
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]:
+          name === "price" || name === "purchasePrice" || name === "stock"
+            ? value === ""
+              ? ""
+              : Number(value)
+            : value,
+      };
+
+      // Si la categoría cambia y deja de ser FOOD, limpiamos expirationDate
+      if (name === "category" && value !== "FOOD") {
+        updated.expirationDate = "";
+      }
+
+      return updated;
+    });
 
     if (errors[name as keyof ProductFormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+  };
+
+  const handleSupplierChange = (supplierId: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      supplierId,
+    }));
+  };
+
+  const toggleSupplierSelect = () => {
+    if (showSupplier) {
+      setFormData((prev) => ({ ...prev, supplierId: undefined }));
+    }
+    setShowSupplier(!showSupplier);
   };
 
   const validate = (): boolean => {
@@ -134,6 +176,7 @@ export function ProductModal({
     if (success !== false) {
       if (!keepData) {
         setFormData(INITIAL_FORM);
+        setShowSupplier(false);
       }
       if (!keepOpen) {
         onClose();
@@ -284,6 +327,52 @@ export function ProductModal({
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* 📅 Selector de Fecha de Vencimiento (Solo cuando category === 'FOOD') */}
+          {formData.category === "FOOD" && (
+            <div className="product-form-group">
+              <label htmlFor="expirationDate">
+                Fecha de vencimiento <span style={{ color: "#64748b" }}>(Opcional)</span>
+              </label>
+              <div className="product-input-wrapper">
+                <Calendar size={18} className="product-input-icon" />
+                <input
+                  type="date"
+                  id="expirationDate"
+                  name="expirationDate"
+                  value={formData.expirationDate || ""}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Sección de Proveedor (Opcional) */}
+          <div className="product-form-group">
+            <button
+              type="button"
+              className="btn-toggle-supplier"
+              onClick={toggleSupplierSelect}
+              disabled={isLoading}
+            >
+              <Truck size={16} />
+              {showSupplier
+                ? "Quitar proveedor opcional"
+                : "+ Seleccionar proveedor (Opcional)"}
+            </button>
+
+            {showSupplier && (
+              <div className="supplier-select-container">
+                <SupplierSelect
+                  value={formData.supplierId}
+                  onChange={handleSupplierChange}
+                  disabled={isLoading}
+                  label="Proveedor asignado"
+                />
+              </div>
+            )}
           </div>
 
           {/* Opciones adicionales */}

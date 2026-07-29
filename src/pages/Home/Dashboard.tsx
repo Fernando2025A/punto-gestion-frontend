@@ -9,11 +9,6 @@ import {
   ShoppingCart,
   DollarSign,
   PlusCircle,
-  Headphones,
-  Keyboard,
-  Mouse,
-  BatteryCharging,
-  Monitor,
 } from "lucide-react";
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
@@ -23,9 +18,9 @@ import {
   ProductModal,
   type ProductFormData,
 } from "../../components/ProductModal/ProductModal";
-import { Toast } from "../../components/Toast/Toast";
 import { useNavigate } from "react-router-dom";
 import { StockExitModal } from "../../components/StockExitModal/StockExitModal";
+import { useToast } from "../../hooks/useToast";
 
 export function Dashboard() {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -39,19 +34,11 @@ export function Dashboard() {
     totalProducts: 0,
     totalStock: 0,
     totalValue: 0,
+    todayMovements: [],
   })
 
   const [stockExitModal, setIsStockExitModal] = useState(false);
-  // Estado para la notificación
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({
-    show: false,
-    message: "",
-    type: "success",
-  });
+  const { showToast } = useToast();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -65,12 +52,6 @@ export function Dashboard() {
     }
     getResume();
   }, [apiUrl])
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
-    setToast({ show: true, message, type });
-  };
 
   const handleCreateProduct = async (
     data: ProductFormData,
@@ -124,54 +105,10 @@ export function Dashboard() {
   };
 
   // Datos mock para "Stock bajo"
-  const lowStockItems = [
-    {
-      id: 1,
-      name: "Auriculares Inalámbricos",
-      category: "Tecnología",
-      stock: "5 unidades",
-      icon: Headphones,
-    },
-    {
-      id: 2,
-      name: "Teclado Mecánico",
-      category: "Tecnología",
-      stock: "3 unidades",
-      icon: Keyboard,
-    },
-    {
-      id: 3,
-      name: "Mouse Óptico",
-      category: "Tecnología",
-      stock: "4 unidades",
-      icon: Mouse,
-    },
-    {
-      id: 4,
-      name: "Cargador USB-C",
-      category: "Accesorios",
-      stock: "2 unidades",
-      icon: BatteryCharging,
-    },
-    {
-      id: 5,
-      name: 'Monitor 24"',
-      category: "Tecnología",
-      stock: "3 unidades",
-      icon: Monitor,
-    },
-  ];
+  const lowStockItems = [];
 
   return (
     <div className="dashboard-layout">
-      <Toast
-        isOpen={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
-      />
-      
-
       {isModalOpen && (
         <ProductModal
           isOpen={isProductModalOpen}
@@ -241,7 +178,7 @@ export function Dashboard() {
                 <span className="metric-title">Movimientos hoy</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">24</h2>
+                <h2 className="metric-value">{resume?.todayMovements.length + 1}</h2>
               </div>
             </div>
 
@@ -269,7 +206,7 @@ export function Dashboard() {
                   Ver todos
                 </a>
               </div>
-              <ul className="low-stock-list">
+              {/* <ul className="low-stock-list">
                 {lowStockItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -287,7 +224,7 @@ export function Dashboard() {
                     </li>
                   );
                 })}
-              </ul>
+              </ul> */}
             </div>
 
             {/* Chart Panel */}
@@ -456,7 +393,6 @@ export function Dashboard() {
       <StockExitModal
         isOpen={stockExitModal}
         onClose={() => setIsStockExitModal(false)}
-
       />
     </div>
   );
