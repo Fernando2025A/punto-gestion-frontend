@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import "./StockExitModal.css";
+import "./StockEntryModal.css";
 import { useToast } from "../../hooks/useToast";
 
 // Interface para el modelo de Producto
@@ -15,41 +15,36 @@ interface ProductsResponse {
   data: Product[];
 }
 
-// Props necesarias para integrarlo en tu página
-export interface StockExitModalProps {
+// Props del Modal
+export interface StockEntryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (product: Product, quantity: number, reason: string) => void;
 }
 
-// URL obtenida desde las variables de entorno de Vite
 const API_URL = import.meta.env.VITE_API_URL;
 
-export function StockExitModal({
+export function StockEntryModal({
   isOpen,
   onClose,
   onSubmit,
-}: StockExitModalProps) {
-
+}: StockEntryModalProps) {
   const { showToast } = useToast();
-  // Estados de productos
+
+  // Estados
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  // Estados del formulario
   const [searchQuery, setSearchQuery] = useState("");
   const [quantity, setQuantity] = useState<number | "">("");
   const [reason, setReason] = useState("");
 
-  // Estados de estado y carga
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Fetch de productos SOLO cuando isOpen cambia a true
+  // Reset y Fetch de productos al abrir el modal
   useEffect(() => {
     if (!isOpen) {
-      // Limpiar datos cuando el modal se cierra
       setSelectedProduct(null);
       setSearchQuery("");
       setQuantity("");
@@ -72,7 +67,6 @@ export function StockExitModal({
         }
 
         const responseJson: ProductsResponse = await res.json();
-
         setProducts(responseJson.data);
       } catch (err: any) {
         setError(err.message || "No se pudieron cargar los productos");
@@ -80,25 +74,23 @@ export function StockExitModal({
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, [isOpen]);
 
-  // 2. Filtro en tiempo real por nombre
+  // Filtro de productos
   const filteredProducts = useMemo(() => {
     return products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [products, searchQuery]);
 
-  // 3. Selección de producto
+  // Seleccionar producto (Permite seleccionar incluso si stock es 0)
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
-    if (typeof quantity === "number" && quantity > product.stock) {
-      setQuantity(product.stock);
-    }
   };
 
-  // 4. Envío del formulario para descontar stock
+  // Submit para ingresar stock
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -113,18 +105,10 @@ export function StockExitModal({
       return;
     }
 
-    if (qtyNumber > selectedProduct.stock) {
-      showToast(
-        `La cantidad excede el stock disponible (${selectedProduct.stock}).`,
-        "error"
-      );
-      return;
-    }
-
     try {
       setSubmitting(true);
 
-      const response = await fetch(`${API_URL}/products/stock-exit`, {
+      const response = await fetch(`${API_URL}/products/stock-entry`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -139,51 +123,48 @@ export function StockExitModal({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al registrar la salida");
+        throw new Error(errorData.message || "Error al registrar la entrada");
       }
 
-      // Si existe el callback onSubmit provisto por la página padre, se ejecuta
       if (onSubmit) {
         onSubmit(selectedProduct, qtyNumber, reason.trim());
       }
 
-      showToast("Salida de stock registrada con éxito", "success");
-      onClose(); // Cerrar el modal al finalizar
+      showToast("Entrada de stock registrada con éxito", "success");
+      onClose();
     } catch (err: any) {
       showToast(
-        err.message || "Ocurrió un error al procesar la salida",
-        "error",
+        err.message || "Ocurrió un error al procesar la entrada",
+        "error"
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Si el modal no está abierto, no renderizar nada
   if (!isOpen) return null;
+
   return (
     <div className="dark-modal-overlay" onClick={onClose}>
       <div
         className="dark-modal-container"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabecera del Modal */}
+        {/* Cabecera */}
         <div className="dark-modal-header">
-          <h3>Registrar Salida de Stock</h3>
+          <h3>Registrar Entrada de Stock</h3>
           <button type="button" className="close-btn" onClick={onClose}>
             &times;
           </button>
         </div>
 
-        {/* Cuerpo del Modal */}
+        {/* Cuerpo */}
         <div className="dark-modal-body">
           {/* Buscador */}
           <div className="search-group">
-            <label htmlFor="modal-search">Buscar Producto</label>
             <input
-              id="modal-search"
               type="text"
-              className="dark-input"
+              className="dark-input search-input"
               placeholder="Escribe el nombre del producto..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -204,17 +185,12 @@ export function StockExitModal({
               <div className="cards-grid">
                 {filteredProducts.map((product) => {
                   const isSelected = selectedProduct?.id === product.id;
-                  const isOutOfStock = product.stock <= 0;
 
                   return (
                     <div
                       key={product.id}
-                      className={`product-card ${isSelected ? "selected" : ""} ${
-                        isOutOfStock ? "out-of-stock" : ""
-                      }`}
-                      onClick={() =>
-                        !isOutOfStock && handleSelectProduct(product)
-                      }
+                      className={`product-card ${isSelected ? "selected" : ""}`}
+                      onClick={() => handleSelectProduct(product)}
                     >
                       <div className="card-header">
                         <h4>{product.name}</h4>
@@ -228,15 +204,10 @@ export function StockExitModal({
                         <p className="price">
                           ${product.price.toLocaleString()}
                         </p>
-                        <p
-                          className={`stock ${isOutOfStock ? "stock-zero" : ""}`}
-                        >
+                        <p className="stock">
                           Stock: <strong>{product.stock}</strong>
                         </p>
                       </div>
-                      {isOutOfStock && (
-                        <div className="stock-warning">Sin Stock</div>
-                      )}
                     </div>
                   );
                 })}
@@ -245,12 +216,12 @@ export function StockExitModal({
           </div>
 
           {/* Formulario */}
-          <form onSubmit={handleSubmit} className="exit-fields-form">
+          <form onSubmit={handleSubmit} className="entry-fields-form">
             <div className="selected-info">
               {selectedProduct ? (
                 <p>
                   Seleccionado: <span>{selectedProduct.name}</span> | Stock
-                  disponible: <strong>{selectedProduct.stock}</strong>
+                  actual: <strong>{selectedProduct.stock}</strong>
                 </p>
               ) : (
                 <p className="placeholder-text">Ningún producto seleccionado</p>
@@ -264,11 +235,10 @@ export function StockExitModal({
                   id="modal-quantity"
                   type="number"
                   min="1"
-                  max={selectedProduct ? selectedProduct.stock : undefined}
                   className="dark-input"
                   placeholder="Ej. 5"
                   value={quantity}
-                  disabled={!selectedProduct || selectedProduct.stock <= 0}
+                  disabled={!selectedProduct}
                   onChange={(e) =>
                     setQuantity(e.target.value ? Number(e.target.value) : "")
                   }
@@ -282,9 +252,9 @@ export function StockExitModal({
                   id="modal-reason"
                   type="text"
                   className="dark-input"
-                  placeholder="Ej. Venta, Mermas, Rotura"
+                  placeholder="Ej. Compra a proveedor, Reabastecimiento"
                   value={reason}
-                  disabled={!selectedProduct || selectedProduct.stock <= 0}
+                  disabled={!selectedProduct}
                   onChange={(e) => setReason(e.target.value)}
                 />
               </div>
@@ -303,14 +273,9 @@ export function StockExitModal({
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={
-                  !selectedProduct ||
-                  selectedProduct.stock <= 0 ||
-                  submitting ||
-                  !quantity
-                }
+                disabled={!selectedProduct || submitting || !quantity}
               >
-                {submitting ? "Descontando..." : "Aceptar y Descontar"}
+                {submitting ? "Ingresando..." : "Aceptar e Ingresar"}
               </button>
             </div>
           </form>

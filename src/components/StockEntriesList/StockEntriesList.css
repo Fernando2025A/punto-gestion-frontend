@@ -1,0 +1,205 @@
+:root {
+  --se01-bg-panel: #0d121f;
+  --se01-bg-input: #1f2937;
+  --se01-text-main: #f3f4f6;
+  --se01-text-muted: #9ca3af;
+  --se01-border-color: #374151;
+  --se01-accent-green: #10b981; /* Verde para entradas */
+  --se01-hover-row: #182235;
+}
+
+.se01-stock-history-panel {
+  background-color: var(--se01-bg-panel);
+  color: var(--se01-text-main);
+  padding: 2rem;
+  border-radius: 12px;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  max-width: 1200px;
+  margin: 1rem auto;
+  border: 1px solid var(--se01-border-color);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.se01-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.se01-title-group h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.se01-title-group p {
+  margin: 0.25rem 0 0;
+  color: var(--se01-text-muted);
+  font-size: 0.9rem;
+}
+
+.se01-btn-actualizar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--se01-bg-input);
+  color: var(--se01-text-main);
+  border: 1px solid var(--se01-border-color);
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.se01-btn-actualizar:hover {
+  border-color: #4b5563;
+}
+
+.se01-panel-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.se01-search-wrapper, 
+.se01-filter-wrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.se01-search-wrapper input, 
+.se01-filter-wrapper select {
+  width: 100%;
+  background-color: var(--se01-bg-input);
+  color: var(--se01-text-main);
+  border: 1px solid var(--se01-border-color);
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.se01-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--se01-text-muted);
+}
+
+.se01-filter-wrapper {
+  max-width: 250px;
+}
+
+.se01-filter-wrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.se01-table-wrapper {
+  overflow-x: auto;
+}
+
+.se01-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 900px;
+}
+
+.se01-history-table th, 
+.se01-history-table td {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--se01-border-color);
+  text-align: left;
+}
+
+.se01-history-table th {
+  color: var(--se01-text-muted);
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.se01-history-table tbody tr:hover {
+  background-color: var(--se01-hover-row);
+}
+
+.se01-date-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--se01-text-main);
+}
+
+.se01-icon-calendar {
+  color: var(--se01-text-muted);
+}
+
+/* Badges */
+.se01-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.se01-badge-type-entry {
+  background-color: rgba(16, 185, 129, 0.15); /* Verde translúcido */
+  color: #6ee7b7; /* Verde claro */
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.se01-badge-prod-id {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Cantidad Positiva */
+.se01-stock-change-positive {
+  color: var(--se01-accent-green);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.se01-stock-values {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.se01-old-stock, 
+.se01-stock-arrow {
+  color: var(--se01-text-muted);
+}
+
+.se01-new-stock {
+  color: var(--se01-text-main);
+  font-weight: 700;
+}
+
+.se01-reason-text {
+  color: var(--se01-text-main);
+}
+
+.se01-reason-empty {
+  color: var(--se01-text-muted);
+  font-style: italic;
+}
+
+.se01-loading-panel,
+.se01-error-panel,
+.se01-no-data-panel {
+  padding: 3rem;
+  text-align: center;
+  border-radius: 12px;
+  background-color: var(--se01-bg-input);
+  margin-top: 1rem;
+  color: var(--se01-text-muted);
+}

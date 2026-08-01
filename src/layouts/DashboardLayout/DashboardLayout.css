@@ -7,9 +7,9 @@
 }
 
 /* Área de contenido principal */
-.main-content {
+.dashboard-main-content-sidebar-unique {
   flex-grow: 1;
-  padding: 1.5rem;
+  padding: 0rem;
   overflow-y: auto;
   min-width: 0; /* Previene que tablas o elementos anchos rompan el flexbox */
 }
@@ -21,7 +21,7 @@
     width: 100%;
   }
 
-  .main-content {
+  .dashboard-main-content-sidebar-unique {
     width: 100%;
     box-sizing: border-box; /* Evita que el padding genere scroll horizontal */
     padding: 1rem; /* Ajusta según el padding que prefieras en móvil */

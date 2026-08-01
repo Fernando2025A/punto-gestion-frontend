@@ -7,7 +7,6 @@ import {
   Trash2,
   Calendar,
   Layers,
-  Filter,
   RefreshCw,
   Info,
 } from "lucide-react";
@@ -69,6 +68,22 @@ export function MovementsPage() {
     fetchMovements();
   }, [apiUrl]);
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${apiUrl}/movements`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Error al cargar los movimientos");
+      const data = await response.json();
+      setMovements(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Ocurrió un error inesperado");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Helper para renderizar Badge y Formato de tipo
   const renderTypeBadge = (type: MovementType) => {
     switch (type) {
@@ -182,6 +197,7 @@ export function MovementsPage() {
           type="button"
           className="btn-refresh"
           disabled={isLoading}
+          onClick={handleRefresh}
         >
           <RefreshCw size={16} className={isLoading ? "spin" : ""} />
           <span>Actualizar</span>
@@ -200,7 +216,6 @@ export function MovementsPage() {
         </div>
 
         <div className="filter-box">
-          <Filter size={18} className="filter-icon" />
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}

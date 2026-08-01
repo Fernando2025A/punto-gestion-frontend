@@ -21,6 +21,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { StockExitModal } from "../../components/StockExitModal/StockExitModal";
 import { useToast } from "../../hooks/useToast";
+import { StockEntryModal } from "../../components/StockEntryModal/StockEntryModal";
+
+interface DaySummary {
+  date: string; // Formato "YYYY-MM-DD"
+  totalMovements: number;
+}
 
 export function Dashboard() {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -35,27 +41,105 @@ export function Dashboard() {
     totalStock: 0,
     totalValue: 0,
     todayMovements: [],
-  })
+  });
+  const [data, setData] = useState<DaySummary[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [stockExitModal, setIsStockExitModal] = useState(false);
+  const [stockEntryModal, setIsStockEntryModal] = useState(false);
   const { showToast } = useToast();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const getResume = async () => {
-      const response = await fetch(`${apiUrl}/inventory`, {
-        credentials: "include",
-      });
-      const data = await response.json();
-      setResume(data);
-    }
+      try {
+        const response = await fetch(`${apiUrl}/inventory`, {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setResume(data);
+        }
+      } catch (err) {
+        console.error("Error al obtener el resumen:", err);
+      }
+    };
+
+    const fetchMovements = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(`${apiUrl}/movements/last7days`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del gráfico");
+        }
+
+        const result: DaySummary[] = await response.json();
+        setData(result);
+      } catch (err: any) {
+        setError(err.message || "Error de conexión");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovements();
     getResume();
-  }, [apiUrl])
+  }, [apiUrl]);
+
+  // --- Dimensiones y cálculos dinámicos para el SVG ---
+  const svgWidth = 500;
+  const svgHeight = 200;
+  const paddingX = 30;
+  const paddingYTop = 30;
+  const paddingYBottom = 30;
+
+  // 1. Encontrar el valor máximo para escalar verticalmente el gráfico
+  const maxVal = Math.max(...data.map((d) => d.totalMovements), 1);
+
+  // 2. Mapear cada dato a coordenadas (x, y) relativas al viewBox del SVG
+  const points = data.map((item, index) => {
+    const stepX = (svgWidth - paddingX * 2) / Math.max(data.length - 1, 1);
+    const x = paddingX + index * stepX;
+
+    // Invertimos el eje Y porque en SVG el 0 está arriba
+    const chartAreaHeight = svgHeight - paddingYTop - paddingYBottom;
+    const y =
+      svgHeight -
+      paddingYBottom -
+      (item.totalMovements / maxVal) * chartAreaHeight;
+
+    return { x, y, ...item };
+  });
+
+  // 3. Generar cadenas de texto para SVG <path> y <polygon>
+  const pathD = points.reduce((acc, point, index) => {
+    return index === 0
+      ? `M ${point.x},${point.y}`
+      : `${acc} L ${point.x},${point.y}`;
+  }, "");
+
+  const polygonPoints = points.length
+    ? `${points.map((p) => `${p.x},${p.y}`).join(" ")} ${
+        points[points.length - 1].x
+      },${svgHeight - 20} ${points[0].x},${svgHeight - 20}`
+    : "";
+
+  // Auxiliar para formatear la fecha YYYY-MM-DD al día de la semana (ej: "Lun", "Mar")
+  const formatDayName = (dateStr: string) => {
+    const date = new Date(`${dateStr}T00:00:00`);
+    const dayName = date.toLocaleDateString("es-ES", { weekday: "short" });
+    return dayName.charAt(0).toUpperCase() + dayName.slice(1, 3);
+  };
 
   const handleCreateProduct = async (
     data: ProductFormData,
-    options: { keepOpen: boolean; keepData: boolean },
+    options: { keepOpen: boolean; keepData: boolean }
   ) => {
     setIsSaving(true);
     try {
@@ -69,11 +153,9 @@ export function Dashboard() {
       if (response.ok) {
         showToast("¡Producto creado con éxito!", "success");
         if (!options.keepOpen) {
-        setIsModalOpen(false);
-      }
-
-      // Retornamos true para indicar éxito
-      return true;
+          setIsProductModalOpen(false);
+        }
+        return true;
       } else {
         showToast("No se pudo crear el producto.", "error");
         return false;
@@ -86,6 +168,7 @@ export function Dashboard() {
       setIsSaving(false);
     }
   };
+
   const handleConfirmLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -96,7 +179,6 @@ export function Dashboard() {
     } catch (error) {
       console.error("Error al cerrar sesión en el servidor:", error);
     } finally {
-      // 2. Limpiar estado local, cerrar modal y redirigir
       logout();
       setIsLoggingOut(false);
       setIsModalOpen(false);
@@ -104,19 +186,8 @@ export function Dashboard() {
     }
   };
 
-  // Datos mock para "Stock bajo"
-  const lowStockItems = [];
-
   return (
     <div className="dashboard-layout">
-      {isModalOpen && (
-        <ProductModal
-          isOpen={isProductModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleCreateProduct}
-          isLoading={isSaving}
-        />
-      )}
       {/* Main Container */}
       <div className="main-wrapper">
         {/* Top Header */}
@@ -178,7 +249,9 @@ export function Dashboard() {
                 <span className="metric-title">Movimientos hoy</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">{resume?.todayMovements.length + 1}</h2>
+                <h2 className="metric-value">
+                  {resume?.todayMovements ? resume.todayMovements.length : 0}
+                </h2>
               </div>
             </div>
 
@@ -191,7 +264,9 @@ export function Dashboard() {
                 <span className="metric-title">Valor de inventario</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">${resume?.totalValue.toLocaleString()}</h2>
+                <h2 className="metric-value">
+                  ${(resume?.totalValue || 0).toLocaleString()}
+                </h2>
               </div>
             </div>
           </section>
@@ -206,25 +281,6 @@ export function Dashboard() {
                   Ver todos
                 </a>
               </div>
-              {/* <ul className="low-stock-list">
-                {lowStockItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.id} className="low-stock-item">
-                      <div className="item-info">
-                        <div className="item-icon-box">
-                          <Icon size={18} />
-                        </div>
-                        <div className="item-details">
-                          <span className="item-name">{item.name}</span>
-                          <span className="item-category">{item.category}</span>
-                        </div>
-                      </div>
-                      <span className="stock-alert">{item.stock}</span>
-                    </li>
-                  );
-                })}
-              </ul> */}
             </div>
 
             {/* Chart Panel */}
@@ -232,91 +288,72 @@ export function Dashboard() {
               <div className="card-header-flex">
                 <h3>Movimientos últimos 7 días</h3>
               </div>
-              <div className="chart-container">
-                {/* SVG Mockup para el gráfico de línea */}
-                <svg className="chart-svg" viewBox="0 0 500 200">
-                  <defs>
-                    <linearGradient
-                      id="chartGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
-                      <stop
-                        offset="100%"
-                        stopColor="#3b82f6"
-                        stopOpacity="0.0"
-                      />
-                    </linearGradient>
-                  </defs>
-                  {/* Grid Lines */}
-                  <line
-                    x1="0"
-                    y1="40"
-                    x2="500"
-                    y2="40"
-                    stroke="#1f293d"
-                    strokeDasharray="3 3"
-                  />
-                  <line
-                    x1="0"
-                    y1="90"
-                    x2="500"
-                    y2="90"
-                    stroke="#1f293d"
-                    strokeDasharray="3 3"
-                  />
-                  <line
-                    x1="0"
-                    y1="140"
-                    x2="500"
-                    y2="140"
-                    stroke="#1f293d"
-                    strokeDasharray="3 3"
-                  />
 
-                  {/* Line area */}
-                  <polygon
-                    fill="url(#chartGradient)"
-                    points="30,150 100,100 170,120 240,40 310,110 380,70 450,110 450,180 30,180"
-                  />
-                  {/* Line */}
-                  <path
-                    d="M 30,150 L 100,100 L 170,120 L 240,40 L 310,110 L 380,70 L 450,110"
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="3"
-                  />
-                  {/* Dots */}
-                  <circle cx="30" cy="150" r="4" fill="#3b82f6" />
-                  <circle cx="100" cy="100" r="4" fill="#3b82f6" />
-                  <circle cx="170" cy="120" r="4" fill="#3b82f6" />
-                  <circle
-                    cx="240"
-                    cy="40"
-                    r="5"
-                    fill="#60a5fa"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                  />
-                  <circle cx="310" cy="110" r="4" fill="#3b82f6" />
-                  <circle cx="380" cy="70" r="4" fill="#3b82f6" />
-                  <circle cx="450" cy="110" r="4" fill="#3b82f6" />
-                </svg>
-
-                {/* X Axis Labels */}
-                <div className="chart-labels">
-                  <span>Vie</span>
-                  <span>Sáb</span>
-                  <span>Dom</span>
-                  <span>Lun</span>
-                  <span>Mar</span>
-                  <span>Mié</span>
-                  <span>Jue</span>
+              {loading ? (
+                <div className="chart-container" style={{ textAlign: "center", padding: "2rem" }}>
+                  <span className="text-muted">Cargando gráfico...</span>
                 </div>
-              </div>
+              ) : error ? (
+                <div className="chart-container" style={{ textAlign: "center", padding: "2rem" }}>
+                  <span className="text-muted" style={{ color: "#ef4444" }}>
+                    {error}
+                  </span>
+                </div>
+              ) : (
+                <div className="chart-container">
+                  <svg className="chart-svg" viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+                    <defs>
+                      <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Grid Lines */}
+                    <line x1="0" y1="40" x2={svgWidth} y2="40" stroke="#1f293d" strokeDasharray="3 3" />
+                    <line x1="0" y1="90" x2={svgWidth} y2="90" stroke="#1f293d" strokeDasharray="3 3" />
+                    <line x1="0" y1="140" x2={svgWidth} y2="140" stroke="#1f293d" strokeDasharray="3 3" />
+
+                    {/* Area under curve */}
+                    {polygonPoints && (
+                      <polygon fill="url(#chartGradient)" points={polygonPoints} />
+                    )}
+
+                    {/* Main Line */}
+                    {pathD && (
+                      <path d={pathD} fill="none" stroke="#3b82f6" strokeWidth="3" />
+                    )}
+
+                    {/* Data Dots */}
+                    {points.map((point) => {
+                      const isHighest = point.totalMovements === maxVal && maxVal > 0;
+                      return (
+                        <g key={point.date}>
+                          <circle
+                            cx={point.x}
+                            cy={point.y}
+                            r={isHighest ? 5 : 4}
+                            fill={isHighest ? "#60a5fa" : "#3b82f6"}
+                            stroke={isHighest ? "#ffffff" : "none"}
+                            strokeWidth={isHighest ? 2 : 0}
+                          >
+                            <title>{`${point.date}: ${point.totalMovements} movimientos`}</title>
+                          </circle>
+                        </g>
+                      );
+                    })}
+                  </svg>
+
+                  {/* X Axis Labels */}
+                  <div className="chart-labels">
+                    {data.map((item) => (
+                      <span key={item.date} title={item.date}>
+                        {formatDayName(item.date)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
@@ -339,7 +376,7 @@ export function Dashboard() {
                 </div>
               </button>
 
-              <button className="action-card">
+              <button className="action-card" onClick={() => setIsStockEntryModal(true)}>
                 <div className="action-icon-wrapper green">
                   <ArrowDownRight size={22} />
                 </div>
@@ -351,7 +388,10 @@ export function Dashboard() {
                 </div>
               </button>
 
-              <button onClick={() => setIsStockExitModal(true)} className="action-card">
+              <button
+                onClick={() => setIsStockExitModal(true)}
+                className="action-card"
+              >
                 <div className="action-icon-wrapper purple">
                   <ArrowUpRight size={22} />
                 </div>
@@ -378,6 +418,8 @@ export function Dashboard() {
           </section>
         </main>
       </div>
+
+      {/* Modales */}
       <ProductModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
@@ -393,6 +435,10 @@ export function Dashboard() {
       <StockExitModal
         isOpen={stockExitModal}
         onClose={() => setIsStockExitModal(false)}
+      />
+      <StockEntryModal 
+        isOpen={stockEntryModal}
+        onClose={() => setIsStockEntryModal(false)}
       />
     </div>
   );

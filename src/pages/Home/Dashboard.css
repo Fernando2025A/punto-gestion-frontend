@@ -375,10 +375,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  .sidebar {
-    display: none; /* En producción se adaptaría a menú desplegable */
-  }
-
   .main-wrapper {
     margin-left: 0;
   }

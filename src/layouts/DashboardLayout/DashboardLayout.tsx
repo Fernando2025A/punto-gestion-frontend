@@ -13,7 +13,7 @@ export function DashboardLayout() {
   const handleConfirmLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const apiUrl = import.meta.env.VITE_API_URL;
       await fetch(`${apiUrl}/auth/logout`, {
         method: "POST",
         credentials: "include",
@@ -33,7 +33,7 @@ export function DashboardLayout() {
       <Sidebar setIsModalOpen={setIsLogoutModalOpen} />
 
       {/* Contenido dinámico según la ruta activa */}
-      <main className="main-content">
+      <main className="dashboard-main-content-sidebar-unique">
         <Outlet />
       </main>
 

@@ -34,7 +34,7 @@ export function Sidebar({ setIsModalOpen }: Props) {
     <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
       {/* Header del Sidebar */}
       <div className="sidebar-header">
-        <div className="logo-wrapper">
+        <div className="logo-wrapper-sidebar">
           <BarChart2 className="logo-icon" size={24} />
           <span className="logo-text">Punto Gestión</span>
         </div>

@@ -21,7 +21,7 @@
   justify-content: space-between;
 }
 
-.logo-wrapper {
+.logo-wrapper-sidebar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -105,11 +105,14 @@
 /* ==================== ESTILOS MOBILE (PANTALLAS PEQUEÑAS) ==================== */
 @media (max-width: 768px) {
   .sidebar {
+    display: flex;
     width: 100%;
+    max-width: 100%;
     height: auto;
     position: relative;
     border-right: none;
     border-bottom: 1px solid var(--border-color, #1e293b);
+    overflow-x: hidden;
   }
 
   .menu-toggle-btn {
@@ -121,6 +124,8 @@
   /* El contenido de navegación inicia oculto */
   .sidebar-content {
     display: none;
+    width: 100%;
+    max-width: 100%;
     background-color: #000000;
     padding-bottom: 0.5rem;
     border-top: 1px solid var(--border-color, #1e293b);
