@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -29,14 +29,34 @@ export interface Supplier {
   };
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface SuppliersPaginatedResponse {
+  data: Supplier[];
+  pagination: PaginationMeta;
+}
+
 const ITEMS_PER_PAGE = 6;
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [paginationMeta, setPaginationMeta] = useState<PaginationMeta>({
+    page: 1,
+    limit: ITEMS_PER_PAGE,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  
+  // 1. Inicializamos en true por defecto para evitar llamar a setLoading(true) síncronamente en el useEffect
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Estados de control de Modales
@@ -49,40 +69,95 @@ export function SuppliersPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const { showToast } = useToast();
 
-  // 1. Obtener los proveedores evitando fugas de memoria con abort control
-  useEffect(() => {
-    let isMounted = true;
+  // Función auxiliar para re-obtener datos en acciones manuales (crear/editar/eliminar)
+  const refetchSuppliers = async (page: number, search: string) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    const fetchSuppliers = async () => {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: ITEMS_PER_PAGE.toString(),
+        ...(search.trim() ? { search: search.trim() } : {}),
+      });
+
+      const res = await fetch(`${API_URL}/suppliers?${queryParams.toString()}`, {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al obtener la lista de proveedores.");
+      }
+
+      const responseData: SuppliersPaginatedResponse = await res.json();
+      setSuppliers(responseData.data);
+      setPaginationMeta(responseData.pagination);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Error al conectar con el servidor.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Resetear a página 1 al modificar la búsqueda
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // 2. useEffect corregido: No realiza setStates síncronos iniciales
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadSuppliers() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`${API_URL}/suppliers`, { credentials: "include" });
-        if (!res.ok) throw new Error("Error al obtener la lista de proveedores.");
-        const data = await res.json();
-        if (isMounted) setSuppliers(data);
-      } catch (err: any) {
-        if (isMounted) setError(err.message || "Error al conectar con el servidor.");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
 
-    fetchSuppliers();
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: ITEMS_PER_PAGE.toString(),
+          ...(searchTerm.trim() ? { search: searchTerm.trim() } : {}),
+        });
+
+        const res = await fetch(`${API_URL}/suppliers?${queryParams.toString()}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error("Error al obtener la lista de proveedores.");
+        }
+
+        const responseData: SuppliersPaginatedResponse = await res.json();
+        setSuppliers(responseData.data);
+        setPaginationMeta(responseData.pagination);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          if (err.name === "AbortError") return;
+          setError(err.message);
+        } else {
+          setError("Error al conectar con el servidor.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadSuppliers();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
-  }, []);
+  }, [currentPage, searchTerm]);
 
-  // Resetear página al buscar
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
-  // 2. Manejo de eliminación
+  // Manejo de eliminación
   const handleDelete = async () => {
-    if (!selectedSupplier) return;
+    if (!selectedSupplier) return false;
 
     setIsDeleting(true);
     try {
@@ -96,14 +171,18 @@ export function SuppliersPage() {
         return false;
       }
 
-      // Actualizar estado local inmediatamente
-      setSuppliers((prev) => prev.filter((s) => s.id !== selectedSupplier.id));
       showToast("Proveedor eliminado exitosamente.", "success");
-      
       setIsDeleteModalOpen(false);
       setSelectedSupplier(null);
+
+      if (suppliers.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetchSuppliers(currentPage, searchTerm);
+      }
+
       return true;
-    } catch (error) {
+    } catch {
       showToast("Error al eliminar el proveedor.", "error");
       return false;
     } finally {
@@ -111,9 +190,9 @@ export function SuppliersPage() {
     }
   };
 
-  // 3. Manejo de edición con actualización local asegurada
+  // Manejo de edición
   const handleEdit = async (formData: SupplierFormData) => {
-    if (!selectedSupplier) return;
+    if (!selectedSupplier) return false;
     setIsSubmitting(true);
 
     try {
@@ -129,30 +208,13 @@ export function SuppliersPage() {
         return false;
       }
 
-      const responseData = await response.json();
-
-      // Mantenemos las propiedades que la API pueda omitir (como _count o inventoryId)
-      // y sobreescribimos name y contact inmediatamente.
-      setSuppliers((prev) =>
-        prev.map((s) => {
-          if (s.id === selectedSupplier.id) {
-            return {
-              ...s,
-              ...responseData,
-              name: formData.name,
-              contact: formData.contact ?? null,
-              _count: s._count, // Mantenemos el conteo de productos intacto
-            };
-          }
-          return s;
-        })
-      );
-
       showToast("Proveedor actualizado exitosamente.", "success");
       setIsEditModalOpen(false);
       setSelectedSupplier(null);
+      refetchSuppliers(currentPage, searchTerm);
+
       return true;
-    } catch (error) {
+    } catch {
       showToast("Error al actualizar el proveedor.", "error");
       return false;
     } finally {
@@ -160,7 +222,7 @@ export function SuppliersPage() {
     }
   };
 
-  // 4. Manejo de creación
+  // Manejo de creación
   const handleCreate = async (formData: SupplierFormData) => {
     setIsSubmitting(true);
     try {
@@ -176,36 +238,19 @@ export function SuppliersPage() {
         return false;
       }
 
-      const newSupplier: Supplier = await response.json();
-
-      // Insertar en estado local
-      setSuppliers((prev) => [newSupplier, ...prev]);
       showToast("Proveedor creado exitosamente.", "success");
       setIsModalOpen(false);
+      setCurrentPage(1);
+      refetchSuppliers(1, searchTerm);
+
       return true;
-    } catch (err) {
+    } catch {
       showToast("Error al crear el proveedor.", "error");
       return false;
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  // 5. Filtrado y Paginación
-  const filteredSuppliers = useMemo(() => {
-    return suppliers.filter(
-      (supplier) =>
-        supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (supplier.contact &&
-          supplier.contact.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [suppliers, searchTerm]);
-
-  const totalPages = Math.ceil(filteredSuppliers.length / ITEMS_PER_PAGE) || 1;
-  const paginatedSuppliers = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredSuppliers.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredSuppliers, currentPage]);
 
   return (
     <div className="suppliers-container">
@@ -237,7 +282,7 @@ export function SuppliersPage() {
           type="text"
           placeholder="Buscar por nombre o contacto..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
           className="suppliers-search-input"
         />
       </div>
@@ -247,7 +292,7 @@ export function SuppliersPage() {
         <div className="suppliers-state-message">Cargando proveedores...</div>
       ) : error ? (
         <div className="suppliers-state-message error-state">{error}</div>
-      ) : paginatedSuppliers.length === 0 ? (
+      ) : suppliers.length === 0 ? (
         <div className="suppliers-state-message">
           {searchTerm
             ? "No se encontraron proveedores coincidentes."
@@ -256,7 +301,7 @@ export function SuppliersPage() {
       ) : (
         /* Grilla de Tarjetas */
         <div className="suppliers-grid">
-          {paginatedSuppliers.map((supplier) => (
+          {suppliers.map((supplier) => (
             <div key={supplier.id} className="supplier-card">
               <div className="supplier-card-header">
                 <div className="supplier-avatar">
@@ -306,10 +351,10 @@ export function SuppliersPage() {
       )}
 
       {/* Controles de Paginación */}
-      {!loading && filteredSuppliers.length > 0 && (
+      {!loading && suppliers.length > 0 && (
         <div className="suppliers-pagination">
           <span className="pagination-info">
-            Página {currentPage} de {totalPages}
+            Página {paginationMeta.page} de {paginationMeta.totalPages} ({paginationMeta.totalItems} registros)
           </span>
 
           <div className="pagination-controls">
@@ -322,8 +367,8 @@ export function SuppliersPage() {
             </button>
             <button
               className="pagination-btn"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === paginationMeta.totalPages}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, paginationMeta.totalPages))}
             >
               <ChevronRight size={18} />
             </button>
@@ -373,3 +418,5 @@ export function SuppliersPage() {
     </div>
   );
 }
+
+export default SuppliersPage;

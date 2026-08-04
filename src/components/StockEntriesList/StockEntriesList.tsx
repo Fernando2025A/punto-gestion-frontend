@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { RefreshCw, Search, ArrowDownCircle, Calendar, Package } from 'lucide-react';
+import { RefreshCw, Search, ArrowDownCircle, Calendar, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import './StockEntriesList.css';
 
 export interface StockEntryMovement {
@@ -16,61 +16,100 @@ export interface StockEntryMovement {
   userId: string;
 }
 
+// Estructura que coincide exactamente con el JSON de la API
+interface PaginatedResponse {
+  data: StockEntryMovement[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
 export function StockEntriesList() {
   const [movements, setMovements] = useState<StockEntryMovement[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [itemsPerPage] = useState<number>(10);
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Función reutilizable para el botón "Actualizar"
-const handleRefresh = () => {
-  fetchData();
-};
-
-const fetchData = async (signal?: AbortSignal) => {
-  try {
-    setLoading(true);
-    setError(null);
-
-    const response = await fetch(`${apiUrl}/movements/stock-entry`, {
-      credentials: 'include',
-      signal, // Permite cancelar la petición si el componente se desmonta
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: No se pudieron obtener los datos.`);
-    }
-
-    const data: StockEntryMovement[] = await response.json();
-    setMovements(data);
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      // Ignoramos el error si fue causado por abortar la petición
-      if (err.name === 'AbortError') return;
-      setError(err.message);
-    } else {
-      setError('Ocurrió un error desconocido.');
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  const controller = new AbortController();
-
-  // Ejecutamos la carga dentro del efecto enviando el signal
-  fetchData(controller.signal);
-
-  // Función de limpieza para cancelar peticiones pendientes
-  return () => {
-    controller.abort();
+  const handleRefresh = () => {
+    fetchData(currentPage);
   };
-}, [apiUrl]);
 
-  // Filtrado simple en memoria por término de búsqueda
+  const fetchData = async (page: number, signal?: AbortSignal) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Endpoint para entradas de stock con parámetros de paginación
+      const response = await fetch(
+        `${apiUrl}/movements/stock-entry?page=${page}&limit=${itemsPerPage}`,
+        {
+          credentials: 'include',
+          signal,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: No se pudieron obtener los datos.`);
+      }
+
+      const resData = await response.json();
+
+      // Mapeo seguro según la estructura devuelta
+      if (Array.isArray(resData)) {
+        // Fallback por si en algún caso la API responde un array plano
+        setMovements(resData);
+        setTotalItems(resData.length);
+        setTotalPages(Math.ceil(resData.length / itemsPerPage) || 1);
+      } else {
+        // Mapeo normal con el objeto "pagination" del backend
+        const paginated: PaginatedResponse = resData;
+        setMovements(paginated.data || []);
+        setTotalPages(paginated.pagination?.totalPages || 1);
+        setTotalItems(paginated.pagination?.totalItems || 0);
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') return;
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error desconocido.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchData(currentPage, controller.signal);
+
+    return () => {
+      controller.abort();
+    };
+  }, [apiUrl, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredMovements = movements.filter((item) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -110,7 +149,7 @@ useEffect(() => {
     );
   };
 
-  if (loading) {
+  if (loading && movements.length === 0) {
     return <div className="se01-loading-panel">Cargando entradas de stock...</div>;
   }
 
@@ -133,8 +172,8 @@ useEffect(() => {
           <h2>Entradas de Stock</h2>
           <p>Auditoría e historial de reabastecimiento e ingreso de inventario.</p>
         </div>
-        <button className="se01-btn-actualizar" onClick={handleRefresh}>
-          <RefreshCw size={16} /> <span>Actualizar</span>
+        <button className="se01-btn-actualizar" onClick={handleRefresh} disabled={loading}>
+          <RefreshCw className={loading ? 'se01-spin' : ''} size={16} /> <span>Actualizar</span>
         </button>
       </div>
 
@@ -146,12 +185,12 @@ useEffect(() => {
             type="text"
             placeholder="Buscar por motivo, ID o detalles..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
 
-      {/* Estado Vacio */}
+      {/* Estado Vacío */}
       {filteredMovements.length === 0 ? (
         <div className="se01-no-data-panel">
           {searchTerm ? 'No se encontraron resultados.' : 'No hay registros de entradas de stock.'}
@@ -210,7 +249,7 @@ useEffect(() => {
             </table>
           </div>
 
-          {/* Vista para Mobile (Tarjetas Verticals) */}
+          {/* Vista para Mobile (Tarjetas Verticales) */}
           <div className="se01-cards-wrapper">
             {filteredMovements.map((item) => (
               <div key={item.id} className="se01-card-item">
@@ -251,11 +290,38 @@ useEffect(() => {
                   )}
                 </div>
 
-                <div className="se01-card-footer">
-                  {formatDateForDisplay(item.createdAt)}
-                </div>
+                <div className="se01-card-footer">{formatDateForDisplay(item.createdAt)}</div>
               </div>
             ))}
+          </div>
+
+          {/* Barra de Paginación */}
+          <div className="se01-pagination-container">
+            <span className="se01-pagination-info">
+              Página <strong>{currentPage}</strong> de <strong>{totalPages}</strong> ({totalItems} registros)
+            </span>
+
+            <div className="se01-pagination-controls">
+              <button
+                className="se01-btn-page"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || loading}
+                title="Página anterior"
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              
+
+              <button
+                className="se01-btn-page"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || loading}
+                title="Página siguiente"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
         </>
       )}

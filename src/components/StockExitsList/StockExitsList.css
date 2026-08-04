@@ -275,6 +275,171 @@
   }
 }
 
+/* ==========================================================================
+   Controles de Paginación (se02-pagination-*) - Con Soporte Modo Oscuro
+   ========================================================================== */
+
+.se02-pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--se-bg-card, #ffffff);
+  border-top: 1px solid var(--se-border-color, #e5e7eb);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  gap: 1rem;
+}
+
+.se02-pagination-info {
+  font-size: 0.875rem;
+  color: var(--se-text-muted, #6b7280);
+  font-weight: 500;
+}
+
+.se02-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.se02-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--se-btn-border, #d1d5db);
+  background-color: var(--se-btn-bg, #ffffff);
+  color: var(--se-btn-text, #374151);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.se02-pagination-btn:hover:not(:disabled) {
+  background-color: var(--se-btn-hover-bg, #f3f4f6);
+  border-color: var(--se-btn-hover-border, #9ca3af);
+  color: var(--se-btn-hover-text, #111827);
+}
+
+.se02-pagination-btn:active:not(:disabled) {
+  background-color: var(--se-btn-active-bg, #e5e7eb);
+}
+
+.se02-pagination-btn:disabled {
+  background-color: var(--se-btn-disabled-bg, #f9fafb);
+  border-color: var(--se-btn-disabled-border, #e5e7eb);
+  color: var(--se-btn-disabled-text, #d1d5db);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.se02-pagination-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   ESTILOS MODO OSCURO (Automático vía SO / Navegador)
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  .se02-pagination-container {
+    background-color: #1f2937;
+    border-top-color: #374151;
+  }
+
+  .se02-pagination-info {
+    color: #9ca3af;
+  }
+
+  .se02-pagination-btn {
+    border-color: #4b5563;
+    background-color: #374151;
+    color: #f3f4f6;
+  }
+
+  .se02-pagination-btn:hover:not(:disabled) {
+    background-color: #4b5563;
+    border-color: #6b7280;
+    color: #ffffff;
+  }
+
+  .se02-pagination-btn:active:not(:disabled) {
+    background-color: #1f2937;
+  }
+
+  .se02-pagination-btn:disabled {
+    background-color: #111827;
+    border-color: #1f2937;
+    color: #4b5563;
+    opacity: 0.6;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   ESTILOS MODO OSCURO (Vía Clase .dark o [data-theme="dark"])
+   -------------------------------------------------------------------------- */
+.dark .se02-pagination-container,
+[data-theme="dark"] .se02-pagination-container {
+  background-color: #1f2937;
+  border-top-color: #374151;
+}
+
+.dark .se02-pagination-info,
+[data-theme="dark"] .se02-pagination-info {
+  color: #9ca3af;
+}
+
+.se02-pagination-info strong {
+  color: white;
+}
+
+.dark .se02-pagination-btn,
+[data-theme="dark"] .se02-pagination-btn {
+  border-color: #4b5563;
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+.dark .se02-pagination-btn:hover:not(:disabled),
+[data-theme="dark"] .se02-pagination-btn:hover:not(:disabled) {
+  background-color: #4b5563;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
+.dark .se02-pagination-btn:active:not(:disabled),
+[data-theme="dark"] .se02-pagination-btn:active:not(:disabled) {
+  background-color: #1f2937;
+}
+
+.dark .se02-pagination-btn:disabled,
+[data-theme="dark"] .se02-pagination-btn:disabled {
+  background-color: #111827;
+  border-color: #1f2937;
+  color: #4b5563;
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptación Mobile
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .se02-pagination-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .se02-pagination-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
 @media (min-width: 768px) {
   .se02-cards-wrapper {
     display: none;

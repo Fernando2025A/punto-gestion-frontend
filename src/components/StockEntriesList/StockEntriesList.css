@@ -279,6 +279,215 @@
   }
 }
 
+/* ==========================================================================
+   Controles de Paginación (se01-pagination-*) - Modo Claro & Oscuro
+   ========================================================================== */
+
+/* Contenedor principal */
+.se01-pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--se-bg-card, #ffffff);
+  border-top: 1px solid var(--se-border-color, #e5e7eb);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  gap: 1rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Texto informativo */
+.se01-pagination-info {
+  font-size: 0.875rem;
+  color: var(--se-text-muted, #6b7280);
+  font-weight: 500;
+}
+
+.se01-pagination-info strong {
+  color: var(--se-text-heading, #111827);
+}
+
+/* Grupo de botones */
+.se01-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Botones de navegación (ChevronLeft / ChevronRight) */
+.se01-btn-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--se-btn-border, #d1d5db);
+  background-color: var(--se-btn-bg, #ffffff);
+  color: var(--se-btn-text, #374151);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.se01-btn-page:hover:not(:disabled) {
+  background-color: var(--se-btn-hover-bg, #f3f4f6);
+  border-color: var(--se-btn-hover-border, #9ca3af);
+  color: var(--se-btn-hover-text, #111827);
+}
+
+.se01-btn-page:active:not(:disabled) {
+  background-color: var(--se-btn-active-bg, #e5e7eb);
+}
+
+.se01-btn-page:disabled {
+  background-color: var(--se-btn-disabled-bg, #f9fafb);
+  border-color: var(--se-btn-disabled-border, #e5e7eb);
+  color: var(--se-btn-disabled-text, #d1d5db);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.se01-btn-page:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Badge indicativo de número de página activa */
+.se01-page-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+/* --------------------------------------------------------------------------
+   ESTILOS MODO OSCURO (Detección por Sistema Operativo / Navegador)
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  .se01-pagination-container {
+    background-color: #1f2937;
+    border-top-color: #374151;
+  }
+
+  .se01-pagination-info {
+    color: #9ca3af;
+  }
+
+  .se01-pagination-info strong {
+    color: #f3f4f6;
+  }
+
+  .se01-btn-page {
+    border-color: #4b5563;
+    background-color: #374151;
+    color: #f3f4f6;
+  }
+
+  .se01-btn-page:hover:not(:disabled) {
+    background-color: #4b5563;
+    border-color: #6b7280;
+    color: #ffffff;
+  }
+
+  .se01-btn-page:active:not(:disabled) {
+    background-color: #1f2937;
+  }
+
+  .se01-btn-page:disabled {
+    background-color: #111827;
+    border-color: #1f2937;
+    color: #4b5563;
+    opacity: 0.6;
+  }
+
+  .se01-page-badge {
+    background-color: #312e81;
+    color: #e0e7ff;
+    border-color: #4338ca;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   ESTILOS MODO OSCURO (Activación manual vía clase .dark o [data-theme="dark"])
+   -------------------------------------------------------------------------- */
+.dark .se01-pagination-container,
+[data-theme="dark"] .se01-pagination-container {
+  background-color: #1f2937;
+  border-top-color: #374151;
+}
+
+.dark .se01-pagination-info,
+[data-theme="dark"] .se01-pagination-info {
+  color: #9ca3af;
+}
+
+.dark .se01-pagination-info strong,
+[data-theme="dark"] .se01-pagination-info strong {
+  color: #f3f4f6;
+}
+
+.dark .se01-btn-page,
+[data-theme="dark"] .se01-btn-page {
+  border-color: #4b5563;
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+.dark .se01-btn-page:hover:not(:disabled),
+[data-theme="dark"] .se01-btn-page:hover:not(:disabled) {
+  background-color: #4b5563;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
+.dark .se01-btn-page:active:not(:disabled),
+[data-theme="dark"] .se01-btn-page:active:not(:disabled) {
+  background-color: #1f2937;
+}
+
+.dark .se01-btn-page:disabled,
+[data-theme="dark"] .se01-btn-page:disabled {
+  background-color: #111827;
+  border-color: #1f2937;
+  color: #4b5563;
+  opacity: 0.6;
+}
+
+.dark .se01-page-badge,
+[data-theme="dark"] .se01-page-badge {
+  background-color: #312e81;
+  color: #e0e7ff;
+  border-color: #4338ca;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptación Móvil (Responsive)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .se01-pagination-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .se01-btn-page {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 @media (min-width: 768px) {
   .se01-cards-wrapper {
     display: none; /* Oculta las tarjetas en escritorios */

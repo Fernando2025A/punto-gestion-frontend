@@ -5,6 +5,8 @@ import {
   Calendar,
   Search,
   Package,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import "./StockExitsList.css";
 
@@ -22,33 +24,73 @@ export interface StockExitMovement {
   userId: string;
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface StockExitPaginatedResponse {
+  data: StockExitMovement[];
+  pagination: PaginationMeta;
+}
+
+const ITEMS_PER_PAGE = 5;
+
 export function StockExitsList() {
   const [movements, setMovements] = useState<StockExitMovement[]>([]);
-  // 1. Inicializamos loading en true para no requerir setLoading(true) síncrono en el montaje
+  const [paginationMeta, setPaginationMeta] = useState<PaginationMeta>({
+    page: 1,
+    limit: ITEMS_PER_PAGE,
+    totalItems: 0,
+    totalPages: 1,
+  });
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // 2. useEffect refactorizado: la petición asíncrona maneja sus estados únicamente tras el primer tick
+  // Resetear a la página 1 al cambiar el filtro de búsqueda
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // 1. Carga inicial y reactiva mediante useEffect (server-side pagination + search)
   useEffect(() => {
     const controller = new AbortController();
 
-    async function loadInitialData() {
+    async function fetchStockExits() {
       try {
-        const response = await fetch(`${apiUrl}/movements/stock-exit`, {
-          credentials: "include",
-          signal: controller.signal,
+        setLoading(true);
+        setError(null);
+
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: ITEMS_PER_PAGE.toString(),
+          ...(searchTerm.trim() ? { search: searchTerm.trim() } : {}),
         });
 
+        const response = await fetch(
+          `${apiUrl}/movements/stock-exit?${queryParams.toString()}`,
+          {
+            credentials: "include",
+            signal: controller.signal,
+          }
+        );
+
         if (!response.ok) {
-          throw new Error(`Error ${response.status}: No se pudieron obtener los datos.`);
+          throw new Error(
+            `Error ${response.status}: No se pudieron obtener los datos.`
+          );
         }
 
-        const data: StockExitMovement[] = await response.json();
-        setMovements(data);
-        setError(null);
+        const responseData: StockExitPaginatedResponse = await response.json();
+        setMovements(responseData.data);
+        setPaginationMeta(responseData.pagination);
       } catch (err: unknown) {
         if (err instanceof Error) {
           if (err.name === "AbortError") return;
@@ -61,29 +103,41 @@ export function StockExitsList() {
       }
     }
 
-    loadInitialData();
+    fetchStockExits();
 
     return () => {
       controller.abort();
     };
-  }, [apiUrl]);
+  }, [apiUrl, currentPage, searchTerm]);
 
-  // 3. Función independiente para recargas manuales (aquí sí activamos loading explícitamente)
+  // 2. Función independiente para recargas manuales (botón Actualizar / Reintentar)
   const handleRefresh = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${apiUrl}/movements/stock-exit`, {
-        credentials: "include",
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: ITEMS_PER_PAGE.toString(),
+        ...(searchTerm.trim() ? { search: searchTerm.trim() } : {}),
       });
 
+      const response = await fetch(
+        `${apiUrl}/movements/stock-exit?${queryParams.toString()}`,
+        {
+          credentials: "include",
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`Error ${response.status}: No se pudieron obtener los datos.`);
+        throw new Error(
+          `Error ${response.status}: No se pudieron obtener los datos.`
+        );
       }
 
-      const data: StockExitMovement[] = await response.json();
-      setMovements(data);
+      const responseData: StockExitPaginatedResponse = await response.json();
+      setMovements(responseData.data);
+      setPaginationMeta(responseData.pagination);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -94,17 +148,6 @@ export function StockExitsList() {
       setLoading(false);
     }
   };
-
-  // Filtrado reactivo en memoria
-  const filteredMovements = movements.filter((item) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      item.reason?.toLowerCase().includes(term) ||
-      item.details?.toLowerCase().includes(term) ||
-      item.productId.toString().includes(term) ||
-      item.id.toString().includes(term)
-    );
-  });
 
   const formatDateForDisplay = (isoString: string) => {
     const date = new Date(isoString);
@@ -135,7 +178,7 @@ export function StockExitsList() {
     );
   };
 
-  if (loading) {
+  if (loading && movements.length === 0) {
     return (
       <div className="se02-stock-exits-loading-panel">
         Cargando historial de salidas de stock...
@@ -143,7 +186,7 @@ export function StockExitsList() {
     );
   }
 
-  if (error) {
+  if (error && movements.length === 0) {
     return (
       <div className="se02-stock-exits-error-panel">
         <p>Error: {error}</p>
@@ -162,8 +205,9 @@ export function StockExitsList() {
           <h2>Salidas de Stock</h2>
           <p>Auditoría e historial de egresos y despasante de inventario.</p>
         </div>
-        <button className="se02-btn-actualizar" onClick={handleRefresh}>
-          <RefreshCw size={16} /> <span>Actualizar</span>
+        <button className="se02-btn-actualizar" onClick={handleRefresh} disabled={loading}>
+          <RefreshCw size={16} className={loading ? "animate-spin" : ""} />{" "}
+          <span>{loading ? "Cargando..." : "Actualizar"}</span>
         </button>
       </div>
 
@@ -175,13 +219,13 @@ export function StockExitsList() {
             type="text"
             placeholder="Buscar por motivo, ID o detalles..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
 
       {/* Estado Vacío */}
-      {filteredMovements.length === 0 ? (
+      {!loading && movements.length === 0 ? (
         <div className="se02-no-data-panel">
           {searchTerm
             ? "No se encontraron resultados coincidentes."
@@ -204,7 +248,7 @@ export function StockExitsList() {
                 </tr>
               </thead>
               <tbody>
-                {filteredMovements.map((item) => (
+                {movements.map((item) => (
                   <tr key={item.id}>
                     <td>{formatDateForDisplay(item.createdAt)}</td>
                     <td>
@@ -249,7 +293,7 @@ export function StockExitsList() {
 
           {/* Vista Mobile (Tarjetas) */}
           <div className="se02-cards-wrapper">
-            {filteredMovements.map((item) => (
+            {movements.map((item) => (
               <div key={item.id} className="se02-card-item">
                 <div className="se02-card-header">
                   <div className="se02-card-badges">
@@ -299,6 +343,34 @@ export function StockExitsList() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Controles de Paginación */}
+          <div className="se02-pagination-container">
+            <span className="se02-pagination-info">
+              Página <strong>{paginationMeta.page}</strong> de <strong>{paginationMeta.totalPages}</strong> ({paginationMeta.totalItems} registros)
+            </span>
+
+            <div className="se02-pagination-controls">
+              <button
+                className="se02-pagination-btn"
+                disabled={currentPage === 1 || loading}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                className="se02-pagination-btn"
+                disabled={currentPage === paginationMeta.totalPages || loading}
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, paginationMeta.totalPages)
+                  )
+                }
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
         </>
       )}
