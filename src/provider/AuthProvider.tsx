@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AuthContext, type User } from "./AuthContext";
+import { AuthContext, type User } from "../context/AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -9,16 +9,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   useEffect(() => {
+    const refreshSession = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/auth/refresh`, {
+          method: "POST",
+          credentials: "include",
+        });
+
+        return response.ok;
+      } catch (error) {
+        console.error("Error al refrescar la sesión:", error);
+        return false;
+      }
+    };
+
     const checkAuthStatus = async () => {
       try {
-        const response = await fetch(`${apiUrl}/auth/me`, {
+        let response = await fetch(`${apiUrl}/auth/me`, {
           method: "GET",
           credentials: "include",
         });
 
+        if (!response.ok && response.status === 401) {
+          const refreshed = await refreshSession();
+
+          if (refreshed) {
+            response = await fetch(`${apiUrl}/auth/me`, {
+              method: "GET",
+              credentials: "include",
+            });
+          }
+        }
+
         if (response.ok) {
           const data = await response.json(); // Se espera que la API devuelva p.ej. { username: "admin" }
-          setUser({ username: data.username, id: data.id, email: data?.email});
+          setUser({ username: data.username, id: data.id, email: data?.email });
           setIsAuthenticated(true);
         } else {
           setUser(null);
@@ -34,6 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     checkAuthStatus();
+    void refreshSession();
+
+    const intervalId = window.setInterval(() => {
+      void refreshSession();
+    }, 10 * 60 * 1000);
+
+    return () => window.clearInterval(intervalId);
   }, [apiUrl]);
 
   const login = (userData: User) => {

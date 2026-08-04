@@ -24,7 +24,7 @@ body {
 }
 
 /* Layout Principal */
-.register-container {
+.register-page-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -32,42 +32,42 @@ body {
 }
 
 /* Header */
-.header {
+.register-page-header {
   padding: 1.5rem 3rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo-container {
+.register-page-logo-container {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.logo-icon {
+.register-page-logo-icon {
   color: var(--primary-blue);
 }
 
-.logo-text {
+.register-page-logo-text {
   font-weight: 700;
   font-size: 1.125rem;
   letter-spacing: -0.025em;
   color: var(--text-white);
 }
 
-.header-right {
+.register-page-header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.header-text {
+.register-page-header-text {
   color: var(--text-gray);
   font-size: 0.875rem;
 }
 
-.btn-header-login {
+.register-page-btn-header-login {
   background: transparent;
   border: 1px solid var(--card-border);
   color: var(--text-white);
@@ -79,13 +79,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.btn-header-login:hover {
+.register-page-btn-header-login:hover {
   background-color: var(--card-bg);
   border-color: var(--text-gray);
 }
 
 /* Main Content */
-.main-content {
+.register-page-main-content {
   flex-grow: 1;
   display: flex;
   align-items: center;
@@ -94,7 +94,7 @@ body {
 }
 
 /* Card */
-.register-card {
+.register-page-card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 1rem;
@@ -108,7 +108,7 @@ body {
 }
 
 /* Card Header */
-.card-header {
+.register-page-card-header {
   text-align: center;
   margin-bottom: 2rem;
   display: flex;
@@ -116,7 +116,7 @@ body {
   align-items: center;
 }
 
-.icon-wrapper {
+.register-page-icon-wrapper {
   color: var(--primary-blue);
   margin-bottom: 1rem;
   display: flex;
@@ -124,14 +124,14 @@ body {
   justify-content: center;
 }
 
-.card-title {
+.register-page-card-title {
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
   color: var(--text-white);
 }
 
-.card-subtitle {
+.register-page-card-subtitle {
   color: var(--text-gray);
   font-size: 0.875rem;
   line-height: 1.4;
@@ -140,40 +140,40 @@ body {
 }
 
 /* Form Styles */
-.register-form {
+.register-page-form {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-.form-group {
+.register-page-form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   text-align: left;
 }
 
-.form-group label {
+.register-page-form-group label {
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-light);
 }
 
-.input-wrapper {
+.register-page-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-icon {
+.register-page-input-icon {
   position: absolute;
   left: 1rem;
   color: var(--text-muted);
   pointer-events: none;
 }
 
-.input-wrapper input {
+.register-page-input-wrapper input {
   width: 100%;
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
@@ -186,16 +186,16 @@ body {
   box-sizing: border-box;
 }
 
-.input-wrapper input::placeholder {
+.register-page-input-wrapper input::placeholder {
   color: var(--text-muted);
 }
 
-.input-wrapper input:focus {
+.register-page-input-wrapper input:focus {
   border-color: var(--input-focus);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.toggle-password {
+.register-page-toggle-password {
   position: absolute;
   right: 0.75rem;
   background: none;
@@ -209,12 +209,12 @@ body {
   transition: color 0.2s ease;
 }
 
-.toggle-password:hover {
+.register-page-toggle-password:hover {
   color: var(--text-gray);
 }
 
 /* Submit Button */
-.btn-submit {
+.register-page-btn-submit {
   width: 100%;
   margin-top: 0.5rem;
   background-color: var(--primary-blue);
@@ -228,12 +228,12 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.btn-submit:hover {
+.register-page-btn-submit:hover {
   background-color: var(--primary-blue-hover);
 }
 
 /* Terms Text */
-.terms-text {
+.register-page-terms-text {
   margin-top: 1.5rem;
   margin-bottom: 0;
   font-size: 0.75rem;
@@ -242,23 +242,23 @@ body {
   line-height: 1.4;
 }
 
-.terms-link {
+.register-page-terms-link {
   color: var(--primary-blue);
   text-decoration: underline;
   cursor: pointer;
 }
 
-.terms-link:hover {
+.register-page-terms-link:hover {
   color: var(--primary-blue-hover);
 }
 
 /* Responsive */
 @media (max-width: 640px) {
-  .header {
+  .register-page-header {
     padding: 1rem 1.5rem;
   }
 
-  .register-card {
+  .register-page-card {
     padding: 2rem 1.25rem;
   }
 }

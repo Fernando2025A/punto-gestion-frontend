@@ -28,30 +28,33 @@ export function Sidebar({ setIsModalOpen }: Props) {
   const closeMenu = () => setIsOpen(false);
 
   const getNavClass = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "nav-item active" : "nav-item";
+    isActive ? "nav-item nav-item--active" : "nav-item";
 
   return (
-    <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
+    <aside className={`sidebar ${isOpen ? "sidebar--open" : ""}`}>
       {/* Header del Sidebar */}
-      <div className="sidebar-header">
-        <div className="logo-wrapper-sidebar">
+      <div className="sidebar__header">
+        <div className="sidebar__brand">
           <BarChart2 className="logo-icon" size={24} />
           <span className="logo-text">Punto Gestión</span>
         </div>
 
         {/* Botón Hamburguesa (solo visible en pantallas pequeñas) */}
         <button
-          className="menu-toggle-btn"
+          className="sidebar__toggle"
           onClick={toggleMenu}
           aria-label="Toggle menu"
+          aria-expanded={isOpen}
+          aria-controls="sidebar-menu"
+          type="button"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Menú Desplegable / Navegación */}
-      <div className="sidebar-content">
-        <nav className="sidebar-nav">
+      <div className="sidebar__content" id="sidebar-menu">
+        <nav className="sidebar__nav">
           <NavLink to="/home" className={getNavClass} onClick={closeMenu}>
             <Home size={18} />
             <span>Inicio</span>
@@ -98,9 +101,9 @@ export function Sidebar({ setIsModalOpen }: Props) {
           </NavLink>
         </nav>
 
-        <div className="sidebar-footer">
+        <div className="sidebar__footer">
           <button
-            className="nav-item logout-btn"
+            className="nav-item nav-item--logout"
             onClick={() => {
               closeMenu();
               setIsModalOpen(true);

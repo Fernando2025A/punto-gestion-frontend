@@ -17,9 +17,9 @@ import {
   Loader2,
 } from "lucide-react";
 import "./ProductsPage.css";
-import { DeleteProductModal } from "../DeleteProductModal/DeleteProductModal";
-import { EditProductModal } from "../EditProductModal/EditProductModal";
-import type { ProductFormData } from "../ProductModal/ProductModal";
+import { DeleteProductModal } from "../../../components/modals/DeleteProductModal/DeleteProductModal";
+import { EditProductModal } from "../../../components/modals/EditProductModal/EditProductModal";
+import type { ProductFormData } from "../../../components/modals/ProductModal/ProductModal";
 
 export type ProductCategory =
   | "ELECTRONICS"

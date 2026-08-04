@@ -19,76 +19,76 @@ export function Start() {
     navigate("/login");
   }
   return (
-    <div className="home-container">
+    <div className="start-page-container">
       {/* Header / Navbar */}
-      <header className="header">
-        <div className="logo-container">
-          <BarChart2 className="logo-icon" size={24} />
-          <span className="logo-text">Punto Gestión</span>
+      <header className="start-page-header">
+        <div className="start-page-logo-container">
+          <BarChart2 className="start-page-logo-icon" size={24} />
+          <span className="start-page-logo-text">Punto Gestión</span>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className="start-page-main-content">
         {/* Hero Section */}
-        <section className="hero-section">
-          <h1 className="hero-title">
-            <span className="text-blue">Punto </span>
-            <span className="text-white">Gestión</span>
+        <section className="start-page-hero-section">
+          <h1 className="start-page-hero-title">
+            <span className="start-page-text-blue">Punto </span>
+            <span className="start-page-text-white">Gestión</span>
           </h1>
-          <p className="hero-subtitle">
+          <p className="start-page-hero-subtitle">
             El gestor de stock simple y eficiente <br />
             para tu negocio.
           </p>
         </section>
 
         {/* Features Grid */}
-        <section className="features-grid">
+        <section className="start-page-features-grid">
           {/* Feature 1 */}
-          <div className="feature-card">
-            <div className="icon-wrapper">
-              <Box className="feature-icon" size={28} />
+          <div className="start-page-feature-card">
+            <div className="start-page-icon-wrapper">
+              <Box className="start-page-feature-icon" size={28} />
             </div>
-            <h3 className="feature-title">Control de stock</h3>
-            <p className="feature-description">
+            <h3 className="start-page-feature-title">Control de stock</h3>
+            <p className="start-page-feature-description">
               Gestiona tus productos y controla tu inventario en tiempo real.
             </p>
           </div>
 
           {/* Feature 2 */}
-          <div className="feature-card">
-            <div className="icon-wrapper">
-              <TrendingUp className="feature-icon" size={28} />
+          <div className="start-page-feature-card">
+            <div className="start-page-icon-wrapper">
+              <TrendingUp className="start-page-feature-icon" size={28} />
             </div>
-            <h3 className="feature-title">Reportes claros</h3>
-            <p className="feature-description">
+            <h3 className="start-page-feature-title">Reportes claros</h3>
+            <p className="start-page-feature-description">
               Obtén reportes e información clave para tomar mejores decisiones.
             </p>
           </div>
 
           {/* Feature 3 */}
-          <div className="feature-card">
-            <div className="icon-wrapper">
-              <UserCheck className="feature-icon" size={28} />
+          <div className="start-page-feature-card">
+            <div className="start-page-icon-wrapper">
+              <UserCheck className="start-page-feature-icon" size={28} />
             </div>
-            <h3 className="feature-title">Fácil de usar</h3>
-            <p className="feature-description">
+            <h3 className="start-page-feature-title">Fácil de usar</h3>
+            <p className="start-page-feature-description">
               Interfaz intuitiva y simple para que te enfoques en lo que importa.
             </p>
           </div>
         </section>
 
         {/* Call to Action Section */}
-        <section className="cta-section">
-          <h2 className="cta-question">
+        <section className="start-page-cta-section">
+          <h2 className="start-page-cta-question">
             ¿Listo para empezar a gestionar tu negocio?
           </h2>
-          <div className="buttons-container">
-            <button onClick={loginRedirect} className="btn btn-outline">
+          <div className="start-page-buttons-container">
+            <button onClick={loginRedirect} className="start-page-btn start-page-btn-outline">
               <User size={18} />
               <span>Iniciar sesión</span>
             </button>
-            <button onClick={registerRedirect} className="btn btn-primary">
+            <button onClick={registerRedirect} className="start-page-btn start-page-btn-primary">
               <UserPlus size={18} />
               <span>Registrarse</span>
             </button>

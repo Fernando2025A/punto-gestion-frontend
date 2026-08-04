@@ -1,17 +1,18 @@
 :root {
   --se01-bg-panel: #0d121f;
   --se01-bg-input: #1f2937;
+  --se01-bg-card: #141c2e;
   --se01-text-main: #f3f4f6;
   --se01-text-muted: #9ca3af;
   --se01-border-color: #374151;
-  --se01-accent-green: #10b981; /* Verde para entradas */
+  --se01-accent-green: #10b981;
   --se01-hover-row: #182235;
 }
 
 .se01-stock-history-panel {
   background-color: var(--se01-bg-panel);
   color: var(--se01-text-main);
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 12px;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   max-width: 1200px;
@@ -25,11 +26,12 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  gap: 1rem;
 }
 
 .se01-title-group h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.025em;
 }
@@ -37,7 +39,7 @@
 .se01-title-group p {
   margin: 0.25rem 0 0;
   color: var(--se01-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .se01-btn-actualizar {
@@ -47,12 +49,13 @@
   background-color: var(--se01-bg-input);
   color: var(--se01-text-main);
   border: 1px solid var(--se01-border-color);
-  padding: 0.6rem 1.25rem;
+  padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .se01-btn-actualizar:hover {
@@ -65,14 +68,12 @@
   margin-bottom: 1.5rem;
 }
 
-.se01-search-wrapper, 
-.se01-filter-wrapper {
+.se01-search-wrapper {
   position: relative;
   flex-grow: 1;
 }
 
-.se01-search-wrapper input, 
-.se01-filter-wrapper select {
+.se01-search-wrapper input {
   width: 100%;
   background-color: var(--se01-bg-input);
   color: var(--se01-text-main);
@@ -80,6 +81,7 @@
   padding: 0.75rem 1rem 0.75rem 2.75rem;
   border-radius: 8px;
   font-size: 0.9rem;
+  box-sizing: border-box;
 }
 
 .se01-search-icon {
@@ -90,15 +92,76 @@
   color: var(--se01-text-muted);
 }
 
-.se01-filter-wrapper {
-  max-width: 250px;
+/* Badges y Formatos Comunes */
+.se01-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
-.se01-filter-wrapper select {
-  appearance: none;
-  cursor: pointer;
+.se01-badge-type-entry {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.se01-badge-prod-id {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.se01-stock-change-positive {
+  color: var(--se01-accent-green);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.se01-stock-values {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.se01-old-stock,
+.se01-stock-arrow {
+  color: var(--se01-text-muted);
+}
+
+.se01-new-stock {
+  color: var(--se01-text-main);
+  font-weight: 700;
+}
+
+.se01-date-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--se01-text-muted);
+  font-size: 0.825rem;
+}
+
+.se01-reason-empty {
+  color: var(--se01-text-muted);
+  font-style: italic;
+}
+
+.se01-loading-panel,
+.se01-error-panel,
+.se01-no-data-panel {
+  padding: 3rem 1rem;
+  text-align: center;
+  border-radius: 12px;
+  background-color: var(--se01-bg-input);
+  margin-top: 1rem;
+  color: var(--se01-text-muted);
+}
+
+/* Tabla Desktop */
 .se01-table-wrapper {
   overflow-x: auto;
 }
@@ -107,12 +170,11 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  min-width: 900px;
 }
 
-.se01-history-table th, 
+.se01-history-table th,
 .se01-history-table td {
-  padding: 1.25rem 1rem;
+  padding: 1.1rem 1rem;
   border-bottom: 1px solid var(--se01-border-color);
   text-align: left;
 }
@@ -127,79 +189,102 @@
   background-color: var(--se01-hover-row);
 }
 
-.se01-date-cell {
+/* Tarjetas Mobile */
+.se01-cards-wrapper {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: var(--se01-text-main);
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.se01-icon-calendar {
-  color: var(--se01-text-muted);
-}
-
-/* Badges */
-.se01-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.se01-badge-type-entry {
-  background-color: rgba(16, 185, 129, 0.15); /* Verde translúcido */
-  color: #6ee7b7; /* Verde claro */
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.se01-badge-prod-id {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-/* Cantidad Positiva */
-.se01-stock-change-positive {
-  color: var(--se01-accent-green);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.se01-stock-values {
+.se01-card-item {
+  background-color: var(--se01-bg-card);
+  border: 1px solid var(--se01-border-color);
+  border-radius: 10px;
+  padding: 1rem;
   display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.se01-card-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.6rem;
+}
+
+.se01-card-badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.se01-card-body {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
-.se01-old-stock, 
-.se01-stock-arrow {
-  color: var(--se01-text-muted);
+.se01-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
 }
 
-.se01-new-stock {
+.se01-card-label {
+  color: var(--se01-text-muted);
+  font-size: 0.8rem;
+}
+
+.se01-card-value {
   color: var(--se01-text-main);
-  font-weight: 700;
+  font-weight: 500;
+  text-align: right;
 }
 
-.se01-reason-text {
-  color: var(--se01-text-main);
+.se01-card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.6rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.se01-reason-empty {
-  color: var(--se01-text-muted);
-  font-style: italic;
+/* CONTROL RESPONSIVE (MEDIA QUERIES) */
+@media (max-width: 767px) {
+  .se01-table-wrapper {
+    display: none; /* Oculta la tabla en móviles */
+  }
+
+  .se01-cards-wrapper {
+    display: flex; /* Muestra las tarjetas en móviles */
+  }
+
+  .se01-stock-history-panel {
+    padding: 1rem;
+  }
+
+  .se01-panel-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .se01-btn-actualizar span {
+    display: none; /* Icono solo para economizar espacio en móvil */
+  }
+
+  .se01-btn-actualizar {
+    padding: 0.6rem;
+  }
 }
 
-.se01-loading-panel,
-.se01-error-panel,
-.se01-no-data-panel {
-  padding: 3rem;
-  text-align: center;
-  border-radius: 12px;
-  background-color: var(--se01-bg-input);
-  margin-top: 1rem;
-  color: var(--se01-text-muted);
+@media (min-width: 768px) {
+  .se01-cards-wrapper {
+    display: none; /* Oculta las tarjetas en escritorios */
+  }
+
+  .se01-table-wrapper {
+    display: block; /* Muestra la tabla en escritorios */
+  }
 }

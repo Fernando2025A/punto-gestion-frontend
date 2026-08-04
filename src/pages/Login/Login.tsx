@@ -63,18 +63,18 @@ export function Login() {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-page-container">
       {/* Header / Navbar */}
-      <header className="header">
-        <div className="logo-container">
-          <BarChart2 className="logo-icon" size={24} />
-          <span className="logo-text">Punto Gestión</span>
+      <header className="login-page-header">
+        <div className="login-page-logo-container">
+          <BarChart2 className="login-page-logo-icon" size={24} />
+          <span className="login-page-logo-text">Punto Gestión</span>
         </div>
-        <div className="header-right">
-          <span className="header-text">¿No tienes cuenta?</span>
+        <div className="login-page-header-right">
+          <span className="login-page-header-text">¿No tienes cuenta?</span>
           <button
             onClick={() => redirect("register")}
-            className="btn-header-register"
+            className="login-page-btn-header-register"
           >
             Registrarse
           </button>
@@ -82,31 +82,31 @@ export function Login() {
       </header>
 
       {/* Main Content / Login Form */}
-      <main className="main-content">
-        <div className="login-card">
+      <main className="login-page-main-content">
+        <div className="login-page-card">
           {/* Card Header */}
-          <div className="card-header">
-            <div className="icon-wrapper">
-              <User size={36} className="card-icon" />
+          <div className="login-page-card-header">
+            <div className="login-page-icon-wrapper">
+              <User size={36} className="login-page-card-icon" />
             </div>
-            <h1 className="card-title">Iniciar sesión</h1>
-            <p className="card-subtitle">
+            <h1 className="login-page-card-title">Iniciar sesión</h1>
+            <p className="login-page-card-subtitle">
               Bienvenido de nuevo. Inicia sesión para continuar gestionando tu
               negocio.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} className="login-page-form">
             {/* Username / Email */}
-            <div className="form-group">
+            <div className="login-page-form-group">
               <label htmlFor="username">Usuario o correo electrónico</label>
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
+              <div className="login-page-input-wrapper">
+                <User size={18} className="login-page-input-icon" />
                 <input
                   type="text"
                   id="username"
-                  name="username" /* <-- Corregido: coincide con la clave en formData */
+                  name="username"
                   placeholder="Ingresa tu usuario o correo"
                   value={formData.username}
                   onChange={handleChange}
@@ -116,10 +116,10 @@ export function Login() {
             </div>
 
             {/* Contraseña */}
-            <div className="form-group">
+            <div className="login-page-form-group">
               <label htmlFor="password">Contraseña</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
+              <div className="login-page-input-wrapper">
+                <Lock size={18} className="login-page-input-icon" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -131,7 +131,7 @@ export function Login() {
                 />
                 <button
                   type="button"
-                  className="toggle-password"
+                  className="login-page-toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
                 >
@@ -141,36 +141,36 @@ export function Login() {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="form-options">
-              <label className="checkbox-container">
+            <div className="login-page-form-options">
+              <label className="login-page-checkbox-container">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
-                <span className="checkmark"></span>
-                <span className="checkbox-label">Recordarme</span>
+                <span className="login-page-checkmark"></span>
+                <span className="login-page-checkbox-label">Recordarme</span>
               </label>
-              <a href="#forgot-password" className="forgot-password-link">
+              <a href="#forgot-password" className="login-page-forgot-password-link">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
 
             {/* Submit Button */}
-            <button type="submit" className="btn-submit">
+            <button type="submit" className="login-page-btn-submit">
               Iniciar sesión
             </button>
           </form>
 
           {/* Divider */}
-          <div className="divider">
+          <div className="login-page-divider">
             <span>o continúa con</span>
           </div>
 
           {/* Google Login Button */}
           <button
             type="button"
-            className="btn-google"
+            className="login-page-btn-google"
             onClick={handleGoogleLogin}
           >
             <svg

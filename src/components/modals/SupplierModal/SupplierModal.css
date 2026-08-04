@@ -1,0 +1,220 @@
+/* Overlay de fondo semitransparente */
+.supmodal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  animation: supmodal-fade-in 0.2s ease-out;
+}
+
+/* Tarjeta / Contenedor del Modal */
+.supmodal-container {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--bg-card, #0c1117);
+  border: 1px solid var(--border-color, #1f2937);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: supmodal-scale-up 0.2s ease-out;
+}
+
+/* Header */
+.supmodal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #1f2937);
+}
+
+.supmodal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.supmodal-icon {
+  color: var(--primary-green, #10b981);
+}
+
+.supmodal-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-white, #f8fafc);
+}
+
+.supmodal-btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.supmodal-btn-close:hover:not(:disabled) {
+  background-color: var(--badge-bg, #111827);
+  color: var(--text-white, #f8fafc);
+}
+
+/* Formulario & Campos */
+.supmodal-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.supmodal-error-banner {
+  padding: 0.75rem 1rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.875rem;
+}
+
+.supmodal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.supmodal-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-white, #f8fafc);
+}
+
+.supmodal-required {
+  color: #ef4444;
+}
+
+.supmodal-optional {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+  font-weight: normal;
+}
+
+.supmodal-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--bg-main, #030712);
+  border: 1px solid var(--border-color, #1f2937);
+  border-radius: 8px;
+  color: var(--text-white, #f8fafc);
+  font-size: 0.875rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.supmodal-input:focus {
+  border-color: var(--primary-green, #10b981);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.supmodal-input::placeholder {
+  color: var(--text-muted, #64748b);
+}
+
+.supmodal-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer / Botones */
+.supmodal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.supmodal-btn-cancel,
+.supmodal-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.supmodal-btn-cancel {
+  background-color: transparent;
+  border: 1px solid var(--border-color, #1f2937);
+  color: var(--text-muted, #94a3b8);
+}
+
+.supmodal-btn-cancel:hover:not(:disabled) {
+  background-color: var(--badge-bg, #111827);
+  color: var(--text-white, #f8fafc);
+}
+
+.supmodal-btn-submit {
+  background-color: var(--primary-green, #10b981);
+  border: 1px solid transparent;
+  color: #030712;
+  font-weight: 600;
+}
+
+.supmodal-btn-submit:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.supmodal-btn-cancel:disabled,
+.supmodal-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animaciones */
+.supmodal-spin {
+  animation: supmodal-spin-anim 1s linear infinite;
+}
+
+@keyframes supmodal-spin-anim {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes supmodal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes supmodal-scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

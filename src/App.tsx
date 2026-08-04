@@ -13,7 +13,7 @@ import { Categories } from "./pages/Categories/Categories";
 import { Suppliers } from "./pages/Suppliers/Suppliers";
 import { Settings } from "./pages/Settings/Settings";
 import { Reports } from "./pages/Reports/Reports";
-import { ToastProvider } from "./context/ToastProvider"; // O ToastContext según como lo llamaste
+import { ToastProvider } from "./provider/ToastProvider"; // O ToastContext según como lo llamaste
 
 function App() {
   return (

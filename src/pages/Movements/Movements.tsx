@@ -1,8 +1,6 @@
-import { MovementsPage } from "../../components/MovementsPage/MovementsPage"
+import { MovementsPage } from "./MovementsPage/MovementsPage"
 
-type Props = {}
-
-export function Movements({}: Props) {
+export function Movements() {
   return (
     <MovementsPage />
   )

@@ -1,8 +1,8 @@
-type Props = {}
+import { CategoriesPage } from "./CategoriesPage/CategoriesPage"
 
-export function Categories({}: Props) {
+export function Categories() {
   return (
-    <div>Categories</div>
+    <CategoriesPage />
   )
 }
 

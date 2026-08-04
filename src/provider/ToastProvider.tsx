@@ -1,6 +1,6 @@
 import React, {  useState, useCallback } from "react";
 import { Toast, type ToastProps } from "../components/Toast/Toast"; // Ajusta la ruta a tu componente
-import { ToastContext } from "./ToastContext";
+import { ToastContext } from "../context/ToastContext";
 
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {

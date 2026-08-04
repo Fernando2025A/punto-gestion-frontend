@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./StockEntryModal.css";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../../hooks/useToast";
 
 // Interface para el modelo de Producto
 export interface Product {

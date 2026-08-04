@@ -1,5 +1,5 @@
 /* Fondo oscuro translúcido */
-.modal-overlay {
+.logout-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -15,7 +15,7 @@
 }
 
 /* Tarjeta Modal */
-.modal-container {
+.logout-modal-container {
   background-color: #ffffff;
   width: 90%;
   max-width: 400px;
@@ -28,7 +28,7 @@
 }
 
 /* Ícono de alerta/salida */
-.modal-icon-container {
+.logout-modal-icon-container {
   width: 48px;
   height: 48px;
   background-color: #fee2e2;
@@ -40,20 +40,20 @@
   margin: 0 auto 16px auto;
 }
 
-.modal-icon {
+.logout-modal-icon {
   width: 24px;
   height: 24px;
 }
 
 /* Textos */
-.modal-title {
+.logout-modal-title {
   margin: 0 0 8px 0;
   font-size: 1.25rem;
   font-weight: 600;
   color: #1e293b;
 }
 
-.modal-description {
+.logout-modal-description {
   margin: 0 0 24px 0;
   font-size: 0.875rem;
   color: #64748b;
@@ -61,14 +61,14 @@
 }
 
 /* Botones de Acción */
-.modal-actions {
+.logout-modal-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
-.btn-cancel,
-.btn-confirm {
+.logout-modal-btn-cancel,
+.logout-modal-btn-confirm {
   flex: 1;
   padding: 10px 16px;
   border-radius: 8px;
@@ -79,26 +79,26 @@
   border: none;
 }
 
-.btn-cancel {
+.logout-modal-btn-cancel {
   background-color: #f1f5f9;
   color: #475569;
 }
 
-.btn-cancel:hover:not(:disabled) {
+.logout-modal-btn-cancel:hover:not(:disabled) {
   background-color: #e2e8f0;
 }
 
-.btn-confirm {
+.logout-modal-btn-confirm {
   background-color: #dc2626;
   color: #ffffff;
 }
 
-.btn-confirm:hover:not(:disabled) {
+.logout-modal-btn-confirm:hover:not(:disabled) {
   background-color: #b91c1c;
 }
 
-.btn-cancel:disabled,
-.btn-confirm:disabled {
+.logout-modal-btn-cancel:disabled,
+.logout-modal-btn-confirm:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

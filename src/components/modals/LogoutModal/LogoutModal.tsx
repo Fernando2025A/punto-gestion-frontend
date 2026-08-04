@@ -17,17 +17,17 @@ export function LogoutModal({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="logout-modal-overlay" onClick={onClose}>
       <div
-        className="modal-container"
+        className="logout-modal-container"
         onClick={(e) => e.stopPropagation()} // Evita cerrar el modal al hacer clic dentro
         role="dialog"
         aria-modal="true"
         aria-labelledby="logout-title"
       >
-        <div className="modal-icon-container">
+        <div className="logout-modal-icon-container">
           <svg
-            className="modal-icon"
+            className="logout-modal-icon"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -42,17 +42,17 @@ export function LogoutModal({
           </svg>
         </div>
 
-        <h3 id="logout-title" className="modal-title">
+        <h3 id="logout-title" className="logout-modal-title">
           ¿Cerrar sesión?
         </h3>
-        <p className="modal-description">
+        <p className="logout-modal-description">
           ¿Estás seguro de que deseas salir de Punto Gestión? Tendrás que volver a ingresar tus credenciales para acceder.
         </p>
 
-        <div className="modal-actions">
+        <div className="logout-modal-actions">
           <button
             type="button"
-            className="btn-cancel"
+            className="logout-modal-btn-cancel"
             onClick={onClose}
             disabled={isLoggingOut}
           >
@@ -60,7 +60,7 @@ export function LogoutModal({
           </button>
           <button
             type="button"
-            className="btn-confirm"
+            className="logout-modal-btn-confirm"
             onClick={onConfirm}
             disabled={isLoggingOut}
           >

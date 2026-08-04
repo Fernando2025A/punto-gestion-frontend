@@ -7,37 +7,36 @@
   top: 0;
   background-color: #000000;
   border-right: 1px solid #e2e8f0;
-  
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   z-index: 100;
 }
 
-.sidebar-header {
+.sidebar__header {
   padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo-wrapper-sidebar {
+.sidebar__brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.sidebar-header .logo-icon {
+.sidebar__header .logo-icon {
   color: var(--primary-blue);
 }
 
-.sidebar-header .logo-text {
+.sidebar__header .logo-text {
   font-weight: 700;
   font-size: 1.125rem;
 }
 
-.menu-toggle-btn {
-  display: none; /* Oculto en pantallas grandes */
+.sidebar__toggle {
+  display: none;
   background: transparent;
   border: none;
   color: var(--text-white, #ffffff);
@@ -45,14 +44,14 @@
   padding: 4px;
 }
 
-.sidebar-content {
+.sidebar__content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
 }
 
-.sidebar-nav {
+.sidebar__nav {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -60,7 +59,7 @@
   flex-grow: 1;
 }
 
-.sidebar-footer {
+.sidebar__footer {
   padding: 1rem 0.75rem;
   border-top: 1px solid var(--border-color, #1e293b);
 }
@@ -88,16 +87,16 @@
   background-color: var(--panel-bg);
 }
 
-.nav-item.active {
+.nav-item--active {
   background-color: #172033;
   color: var(--primary-blue);
 }
 
-.logout-btn {
+.nav-item--logout {
   color: var(--text-muted);
 }
 
-.logout-btn:hover {
+.nav-item--logout:hover {
   color: #f87171;
   background-color: rgba(239, 68, 68, 0.1);
 }
@@ -107,48 +106,51 @@
   .sidebar {
     display: flex;
     width: 100%;
-    max-width: 100%;
+    max-width: 100vw;
+    min-width: 0;
     height: auto;
     position: relative;
     border-right: none;
     border-bottom: 1px solid var(--border-color, #1e293b);
     overflow-x: hidden;
+    box-sizing: border-box;
   }
 
-  .menu-toggle-btn {
+  .sidebar__toggle {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  /* El contenido de navegación inicia oculto */
-  .sidebar-content {
-    display: none;
+  .sidebar__content {
+    display: flex;
     width: 100%;
     max-width: 100%;
-    background-color: #000000;
-    padding-bottom: 0.5rem;
-    border-top: 1px solid var(--border-color, #1e293b);
-  }
-
-  /* Al presionar el botón agregamos .is-open para mostrar las opciones */
-  .sidebar.is-open .sidebar-content {
-    display: flex;
-    animation: slideDown 0.25s ease-out forwards;
-  }
-
-  .sidebar-nav {
-    padding: 0.75rem;
-  }
-}
-
-@keyframes slideDown {
-  from {
+    max-height: 0;
     opacity: 0;
-    transform: translateY(-8px);
+    pointer-events: none;
+    overflow: hidden;
+    background-color: #000000;
+    border-top: 1px solid var(--border-color, #1e293b);
+    box-sizing: border-box;
+    transition: max-height 0.25s ease, opacity 0.2s ease, padding-bottom 0.25s ease;
   }
-  to {
+
+  .sidebar.sidebar--open .sidebar__content {
+    max-height: 900px;
     opacity: 1;
-    transform: translateY(0);
+    pointer-events: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .sidebar__nav {
+    width: 100%;
+    padding: 0.75rem;
+    box-sizing: border-box;
+  }
+
+  .sidebar__footer {
+    width: 100%;
+    box-sizing: border-box;
   }
 }

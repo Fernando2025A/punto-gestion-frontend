@@ -1,0 +1,192 @@
+/* --- Contenedor Principal --- */
+.catpage-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+  color: var(--text-primary, #f8fafc);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- Header --- */
+.catpage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.catpage-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-white, #f8fafc);
+}
+
+.catpage-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+}
+
+/* --- Botones --- */
+.catpage-btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--bg-card, #0c1117);
+  border: 1px solid var(--border-color, #1f2937);
+  color: var(--text-white, #f8fafc);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.catpage-btn-refresh:hover:not(:disabled) {
+  background-color: var(--badge-bg, #111827);
+  border-color: #374151;
+  color: var(--primary-green, #10b981);
+}
+
+.catpage-btn-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Grid de Tarjetas --- */
+.catpage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+/* --- Tarjeta Individual --- */
+.catpage-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  background-color: var(--bg-card, #0c1117);
+  border: 1px solid var(--border-color, #1f2937);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.catpage-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-green, #10b981);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+}
+
+/* --- Envoltorio del Icono --- */
+.catpage-card-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.1); /* Fondo verde suave */
+  margin-bottom: 1.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.catpage-card:hover .catpage-card-icon-wrapper {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.catpage-card-icon {
+  color: var(--primary-green, #10b981);
+}
+
+/* --- Texto dentro de la tarjeta --- */
+.catpage-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.catpage-card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-white, #f8fafc);
+}
+
+.catpage-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background-color: var(--badge-bg, #111827);
+  border: 1px solid var(--border-color, #1f2937);
+  font-size: 0.8125rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.catpage-card-badge svg {
+  color: var(--primary-green, #10b981);
+}
+
+/* --- Estados de Carga y Error --- */
+.catpage-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: var(--bg-card, #0c1117);
+  border: 1px solid var(--border-color, #1f2937);
+  border-radius: 12px;
+  color: var(--text-muted, #94a3b8);
+  gap: 1rem;
+}
+
+.catpage-state-error {
+  color: #ef4444;
+}
+
+.catpage-btn-retry {
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Animación de Spinner */
+.catpage-spin {
+  animation: catpage-spin-anim 1s linear infinite;
+}
+
+@keyframes catpage-spin-anim {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .catpage-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .catpage-grid {
+    grid-template-columns: 1fr;
+  }
+}

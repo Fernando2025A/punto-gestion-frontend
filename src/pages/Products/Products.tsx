@@ -1,4 +1,4 @@
-import { ProductsPage } from "../../components/ProductsPage/ProductsPage"
+import { ProductsPage } from "./ProductsPage/ProductsPage"
 
 type Props = {}
 

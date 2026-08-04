@@ -1,11 +1,8 @@
-import { SuppliersPage } from "../../components/SuppliersPage/SuppliersPage"
+import { SuppliersPage } from "./SuppliersPage/SuppliersPage"
 
-type Props = {}
-
-export function Suppliers({}: Props) {
+export function Suppliers() {
   return (
      <SuppliersPage />
-
 
   )
 }

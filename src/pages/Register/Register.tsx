@@ -64,40 +64,40 @@ export function Register() {
   };
 
   return (
-    <div className="register-container">
+    <div className="register-page-container">
       {/* Header / Navbar */}
-      <header className="header">
-        <div className="logo-container">
-          <BarChart2 className="logo-icon" size={24} />
-          <span className="logo-text">Punto Gestión</span>
+      <header className="register-page-header">
+        <div className="register-page-logo-container">
+          <BarChart2 className="register-page-logo-icon" size={24} />
+          <span className="register-page-logo-text">Punto Gestión</span>
         </div>
-        <div className="header-right">
-          <span className="header-text">¿Ya tienes cuenta?</span>
-          <button onClick={() => redirect("login")} className="btn-header-login">Iniciar sesión</button>
+        <div className="register-page-header-right">
+          <span className="register-page-header-text">¿Ya tienes cuenta?</span>
+          <button onClick={() => redirect("login")} className="register-page-btn-header-login">Iniciar sesión</button>
         </div>
       </header>
 
       {/* Main Content / Register Form */}
-      <main className="main-content">
-        <div className="register-card">
+      <main className="register-page-main-content">
+        <div className="register-page-card">
           {/* Card Header */}
-          <div className="card-header">
-            <div className="icon-wrapper">
-              <UserPlus size={32} className="card-icon" />
+          <div className="register-page-card-header">
+            <div className="register-page-icon-wrapper">
+              <UserPlus size={32} className="register-page-card-icon" />
             </div>
-            <h1 className="card-title">Crear cuenta</h1>
-            <p className="card-subtitle">
+            <h1 className="register-page-card-title">Crear cuenta</h1>
+            <p className="register-page-card-subtitle">
               Únete a Punto Gestión y comienza a gestionar tu stock de forma eficiente.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="register-form">
+          <form onSubmit={handleSubmit} className="register-page-form">
             {/* Nombre completo */}
-            <div className="form-group">
+            <div className="register-page-form-group">
               <label htmlFor="fullName">Nombre completo</label>
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
+              <div className="register-page-input-wrapper">
+                <User size={18} className="register-page-input-icon" />
                 <input
                   type="text"
                   id="fullName"
@@ -111,10 +111,10 @@ export function Register() {
             </div>
 
             {/* Correo electrónico */}
-            <div className="form-group">
+            <div className="register-page-form-group">
               <label htmlFor="email">Correo electrónico</label>
-              <div className="input-wrapper">
-                <Mail size={18} className="input-icon" />
+              <div className="register-page-input-wrapper">
+                <Mail size={18} className="register-page-input-icon" />
                 <input
                   type="email"
                   id="email"
@@ -128,10 +128,10 @@ export function Register() {
             </div>
 
             {/* Contraseña */}
-            <div className="form-group">
+            <div className="register-page-form-group">
               <label htmlFor="password">Contraseña</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
+              <div className="register-page-input-wrapper">
+                <Lock size={18} className="register-page-input-icon" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
@@ -143,7 +143,7 @@ export function Register() {
                 />
                 <button
                   type="button"
-                  className="toggle-password"
+                  className="register-page-toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
                 >
@@ -153,10 +153,10 @@ export function Register() {
             </div>
 
             {/* Confirmar contraseña */}
-            <div className="form-group">
+            <div className="register-page-form-group">
               <label htmlFor="confirmPassword">Confirmar contraseña</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
+              <div className="register-page-input-wrapper">
+                <Lock size={18} className="register-page-input-icon" />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   id="confirmPassword"
@@ -168,7 +168,7 @@ export function Register() {
                 />
                 <button
                   type="button"
-                  className="toggle-password"
+                  className="register-page-toggle-password"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label="Toggle confirm password visibility"
                 >
@@ -178,19 +178,19 @@ export function Register() {
             </div>
 
             {/* Submit Button */}
-            <button type="submit" className="btn-submit">
+            <button type="submit" className="register-page-btn-submit">
               Registrarse
             </button>
           </form>
 
           {/* Legal / Terms */}
-          <p className="terms-text">
+          <p className="register-page-terms-text">
             Al registrarte, aceptas nuestros{' '}
-            <a href="#terminos" className="terms-link">
+            <a href="#terminos" className="register-page-terms-link">
               Términos de servicio
             </a>{' '}
             y{' '}
-            <a href="#privacidad" className="terms-link">
+            <a href="#privacidad" className="register-page-terms-link">
               Política de privacidad
             </a>
             .

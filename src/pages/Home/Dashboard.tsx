@@ -13,15 +13,15 @@ import {
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { LogoutModal } from "../../components/LogoutModal/LogoutModal";
+import { LogoutModal } from "../../components/modals/LogoutModal/LogoutModal";
 import {
   ProductModal,
   type ProductFormData,
-} from "../../components/ProductModal/ProductModal";
+} from "../../components/modals/ProductModal/ProductModal";
 import { useNavigate } from "react-router-dom";
-import { StockExitModal } from "../../components/StockExitModal/StockExitModal";
+import { StockExitModal } from "../../components/modals/StockExitModal/StockExitModal";
 import { useToast } from "../../hooks/useToast";
-import { StockEntryModal } from "../../components/StockEntryModal/StockEntryModal";
+import { StockEntryModal } from "../../components/modals/StockEntryModal/StockEntryModal";
 
 interface DaySummary {
   date: string; // Formato "YYYY-MM-DD"
@@ -142,12 +142,20 @@ export function Dashboard() {
     options: { keepOpen: boolean; keepData: boolean }
   ) => {
     setIsSaving(true);
+    const validBody = {
+      name: data.name,
+      price: data.price,
+      purchasePrice: data.purchasePrice,
+      category: data.category,
+      stock: data.stock,
+      supplierId: data.supplierId
+    }
     try {
       const response = await fetch(`${apiUrl}/products`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data.expirationDate === "" ? validBody : data),
       });
 
       if (response.ok) {

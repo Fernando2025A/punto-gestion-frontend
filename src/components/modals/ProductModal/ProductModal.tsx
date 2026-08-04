@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X, PackagePlus, DollarSign, Layers, Tag, Truck, Calendar } from "lucide-react";
-import { SupplierSelect } from "../SupplierSelect/SupplierSelect";
+import { SupplierSelect } from "../../SupplierSelect/SupplierSelect";
 import "./ProductModal.css";
 
 export type ProductCategory =

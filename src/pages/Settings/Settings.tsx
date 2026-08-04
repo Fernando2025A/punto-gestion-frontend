@@ -1,4 +1,4 @@
-import { SettingsPage } from "../../components/SettingsPage/SettingsPage";
+import { SettingsPage } from "./SettingsPage/SettingsPage";
 
 export function Settings() {
   return (

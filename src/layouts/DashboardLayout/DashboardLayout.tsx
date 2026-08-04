@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "../../components/Sidebar/Sidebar"; 
-import { LogoutModal } from "../../components/LogoutModal/LogoutModal"; 
+import { Sidebar } from "../Sidebar/Sidebar"; 
+import { LogoutModal } from "../../components/modals/LogoutModal/LogoutModal"; 
 import { useAuth } from "../../hooks/useAuth"; 
 import "./DashboardLayout.css";
 
