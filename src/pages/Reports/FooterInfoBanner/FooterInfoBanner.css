@@ -1,0 +1,12 @@
+.footer-system-info-notice-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8b949e;
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+.footer-info-icon-badge {
+  font-size: 14px;
+}

@@ -232,6 +232,11 @@ body {
   background-color: var(--primary-blue-hover);
 }
 
+.register-page-btn-submit:disabled {
+  background-color: #3d3d3d;
+  cursor: not-allowed;
+}
+
 /* Terms Text */
 .register-page-terms-text {
   margin-top: 1.5rem;

@@ -1,0 +1,81 @@
+.stat-grid-top-summary-cards-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card-kpi-item-box-wrapper {
+  background-color: #161b22;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #30363d;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card-top-head-row-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.stat-card-icon-badge-square-element {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* Colores dinámicos según el tipo de tarjeta */
+.stat-card-type-variant-warning .stat-card-icon-badge-square-element { background: rgba(210, 153, 34, 0.15); color: #d29922; }
+.stat-card-type-variant-danger .stat-card-icon-badge-square-element { background: rgba(248, 81, 73, 0.15); color: #f85149; }
+.stat-card-type-variant-purple .stat-card-icon-badge-square-element { background: rgba(163, 113, 247, 0.15); color: #a371f7; }
+.stat-card-type-variant-blue .stat-card-icon-badge-square-element { background: rgba(56, 139, 253, 0.15); color: #388bfd; }
+.stat-card-type-variant-success .stat-card-icon-badge-square-element { background: rgba(46, 160, 67, 0.15); color: #2ea043; }
+
+.stat-card-title-header-label-text {
+  color: #c9d1d9;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stat-card-central-metric-value-display {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.stat-card-numeric-highlight-big-font {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-card-unit-subtitle-small-tag {
+  font-size: 11px;
+  color: #8b949e;
+}
+
+.stat-card-bottom-footer-detail-description {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: auto;
+}
+
+.stat-card-positive-trend-percentage-indicator {
+  color: #3fb950;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .stat-grid-top-summary-cards-container {
+    display: flex;
+    flex-direction: column;
+  }
+}

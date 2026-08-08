@@ -4,6 +4,7 @@ export interface User {
   username: string;
   id: string;
   email?: string;
+  businessId: number;
 }
 
 export interface AuthContextType {

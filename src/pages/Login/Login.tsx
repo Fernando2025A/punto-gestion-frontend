@@ -3,6 +3,7 @@ import { BarChart2, User, Lock, Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useToast } from "../../hooks/useToast";
 
 export function Login() {
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -10,6 +11,8 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const { login } = useAuth();
+  const { showToast } = useToast();
+
   const navigate = useNavigate();
 
   const redirect = (path: string) => {
@@ -45,16 +48,27 @@ export function Login() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const meResponse = await fetch(`${apiUrl}/auth/me`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!meResponse.ok) {
+          showToast("No se pudo completar el inicio de sesión", "error");
+          return;
+        }
+        showToast("Inicio de sesión exitoso", "success");
+        const meData = await meResponse.json();
 
         // Guardamos los datos del usuario en el contexto
-        login({ username: data.username, email: data?.email, id: data.id });
+        login({ username: meData.username, email: meData?.email, id: meData.id, businessId: meData.ownedBusinesses[0].id });
 
-        redirect("home");
+        navigate("/home", { replace: true });
+        return;
       }
-    } catch (error) {
-      console.error("Error al conectar con el servidor:", error);
-      alert("Error al intentar conectar con el servidor");
+      showToast("No se ha podido iniciar sesión. Verifique usuario y contraseña", "error");
+    } catch {
+      showToast("Error al intentar conectar con el servidor", "error");
     }
   };
 

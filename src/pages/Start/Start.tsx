@@ -4,20 +4,83 @@ import {
   TrendingUp, 
   UserCheck, 
   User, 
-  UserPlus 
+  UserPlus,
+  UserRoundArrowLeftIcon,
 } from 'lucide-react';
 import './Start.css';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../hooks/useAuth';
+import { DemoModal } from './DemoModal/DemoModal';
+import { useState } from 'react';
 
 export function Start() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const { showToast } = useToast();
+  const { login } = useAuth();
   const registerRedirect = () => {
     navigate("/register");
   }
   const loginRedirect = () => {
     navigate("/login");
   }
+
+  const getDemo = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${apiUrl}/auth/demo`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        showToast('Error al obtener la demo', 'error');
+        return;
+      }
+      const data: Credentials = await response.json();
+      console.log('Demo credentials:', data);
+      const resLogin = await fetch(`${apiUrl}/auth/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: data.username,
+          password: data.password,
+        }),
+      });
+      if (!resLogin.ok) {
+        showToast('Error al iniciar sesión', 'error');
+        return;
+      }
+
+      const meResponse = await fetch(`${apiUrl}/auth/me`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!meResponse.ok) {
+        showToast('No se pudo validar la sesión de la demo', 'error');
+        return;
+      }
+
+      const meData = await meResponse.json();
+      login({
+        username: meData.username,
+        email: meData?.email,
+        id: meData.id,
+      });
+
+      navigate('/home', { replace: true });
+      return;
+    } catch (error) {
+      console.error('Error al obtener la demo:', error);
+      showToast('Error al obtener la demo', 'error');
+    }
+  };
   return (
     <div className="start-page-container">
       {/* Header / Navbar */}
@@ -92,9 +155,24 @@ export function Start() {
               <UserPlus size={18} />
               <span>Registrarse</span>
             </button>
+            <button onClick={() => setIsModalOpen(true)} className="start-page-btn start-page-btn-outline">
+              <UserRoundArrowLeftIcon size={18} />
+              <span>Probar Demo</span>
+            </button>
           </div>
         </section>
       </main>
+      <DemoModal 
+        onConfirm={getDemo}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isLoading={isLoading}
+      />
     </div>
   );
+}
+
+type Credentials = {
+  username: string;
+  password: string;
 }

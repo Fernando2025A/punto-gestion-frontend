@@ -318,3 +318,83 @@
 .dark-error {
   color: #ef4444;
 }
+
+/* Búsqueda exclusiva para Stock Entry */
+.ingress-query-sanctuary {
+  margin-bottom: 1.25rem;
+}
+
+.ingress-search-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ingress-filtering-input {
+  flex: 1;
+}
+
+.portal-fetch-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+.portal-fetch-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.45);
+}
+
+.portal-fetch-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Paginador exclusivo para Stock Entry */
+.matrix-pagination-dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vector-pager-btn {
+  background: #0f172a;
+  color: #f1f5f9;
+  border: 1px solid #1e293b;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vector-pager-btn:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.vector-pager-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.nexus-counter-display {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.nexus-counter-display strong {
+  color: #38bdf8;
+}
+

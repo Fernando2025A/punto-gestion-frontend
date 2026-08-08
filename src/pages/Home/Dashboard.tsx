@@ -9,6 +9,7 @@ import {
   ShoppingCart,
   DollarSign,
   PlusCircle,
+  PackageMinus,
 } from "lucide-react";
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
@@ -26,6 +27,20 @@ import { StockEntryModal } from "../../components/modals/StockEntryModal/StockEn
 interface DaySummary {
   date: string; // Formato "YYYY-MM-DD"
   totalMovements: number;
+}
+
+interface InventoryItem {
+  id: number;
+  name: string;
+  price: number;
+  purchasePrice: number;
+  stock: number;
+  category: string;
+  expirationDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+  inventoryId: number;
+  supplierId: number | null;
 }
 
 export function Dashboard() {
@@ -46,6 +61,8 @@ export function Dashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [items, setItems] = useState<InventoryItem[]>([]);
+
   const [stockExitModal, setIsStockExitModal] = useState(false);
   const [stockEntryModal, setIsStockEntryModal] = useState(false);
   const { showToast } = useToast();
@@ -55,7 +72,7 @@ export function Dashboard() {
   useEffect(() => {
     const getResume = async () => {
       try {
-        const response = await fetch(`${apiUrl}/inventory`, {
+        const response = await fetch(`${apiUrl}/inventory?businessId=${user?.businessId}`, {
           credentials: "include",
         });
         if (response.ok) {
@@ -71,7 +88,7 @@ export function Dashboard() {
       try {
         setLoading(true);
 
-        const response = await fetch(`${apiUrl}/movements/last7days`, {
+        const response = await fetch(`${apiUrl}/movements/last7days?businessId=${user?.businessId}`, {
           credentials: "include",
         });
 
@@ -81,6 +98,17 @@ export function Dashboard() {
 
         const result: DaySummary[] = await response.json();
         setData(result);
+
+        const resItems = await fetch(`${apiUrl}/inventory/low-stock?businessId=${user?.businessId}`, {
+          credentials: "include",
+        });
+
+        if (!resItems.ok) {
+          throw new Error("Error al obtener los datos del gráfico");
+        }
+
+        const itemsData: InventoryItem[] = await resItems.json();
+        setItems(itemsData);
       } catch (err: any) {
         setError(err.message || "Error de conexión");
       } finally {
@@ -90,7 +118,7 @@ export function Dashboard() {
 
     fetchMovements();
     getResume();
-  }, [apiUrl]);
+  }, [apiUrl, user?.businessId]);
 
   // --- Dimensiones y cálculos dinámicos para el SVG ---
   const svgWidth = 500;
@@ -151,7 +179,7 @@ export function Dashboard() {
       supplierId: data.supplierId
     }
     try {
-      const response = await fetch(`${apiUrl}/products`, {
+      const response = await fetch(`${apiUrl}/products?businessId=${user?.businessId}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -176,7 +204,6 @@ export function Dashboard() {
       setIsSaving(false);
     }
   };
-
   const handleConfirmLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -289,6 +316,45 @@ export function Dashboard() {
                   Ver todos
                 </a>
               </div>
+              {loading && (
+        <p style={{ color: 'var(--text-subtle)', fontSize: '0.875rem', padding: '0.5rem 0' }}>
+          Cargando productos...
+        </p>
+      )}
+
+      {error && (
+        <p style={{ color: 'var(--accent-red)', fontSize: '0.875rem', padding: '0.5rem 0' }}>
+          {error}
+        </p>
+      )}
+
+      {!loading && !error && items.length === 0 && (
+        <p style={{ color: 'rgba(150, 150, 150, 0.75)', fontSize: '0.875rem', padding: '0.5rem 0', borderRadius: '8px', background: 'rgb(20, 20, 20)', justifyContent: 'center' }}>
+          No hay productos con stock bajo.
+        </p>
+      )}
+
+      {!loading && !error && items.length > 0 && (
+        <ul className="low-stock-list">
+          {items.map((item) => (
+            
+            <li key={item.id} className="low-stock-item">
+              <div className="item-info">
+                <div className="item-icon-box">
+                  <PackageMinus size={18} />
+                </div>
+                <div className="item-details">
+                  <span className="item-name">{item.name}</span>
+                  <span className="item-category">{item.category}</span>
+                </div>
+              </div>
+              <span className="stock-alert">
+                {item.stock} {item.stock === 1 ? 'unidad' : 'unidades'}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
             </div>
 
             {/* Chart Panel */}

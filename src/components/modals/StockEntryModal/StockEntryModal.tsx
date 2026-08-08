@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./StockEntryModal.css";
 import { useToast } from "../../../hooks/useToast";
+import { useAuth } from "../../../hooks/useAuth";
 
 // Interface para el modelo de Producto
 export interface Product {
@@ -11,8 +12,18 @@ export interface Product {
   category?: string;
 }
 
+interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 interface ProductsResponse {
   data: Product[];
+  pagination?: PaginationMeta;
 }
 
 // Props del Modal
@@ -30,19 +41,76 @@ export function StockEntryModal({
   onSubmit,
 }: StockEntryModalProps) {
   const { showToast } = useToast();
+  const { user } = useAuth();
 
-  // Estados
+  // Estados de productos y selección
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Estados de búsqueda y paginación
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize] = useState<number>(12);
+  const [paginationInfo, setPaginationInfo] = useState<PaginationMeta | null>(null);
+
+  // Estados del formulario
   const [quantity, setQuantity] = useState<number | "">("");
   const [reason, setReason] = useState("");
 
+  // Estados de carga y error
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset y Fetch de productos al abrir el modal
+  // Función principal para consulta remota (Paginada o Búsqueda)
+  const fetchProductsData = useCallback(
+    async (pageToFetch: number, termToSearch: string) => {
+      if (!user?.businessId) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        let endpointUrl = "";
+        const cleanSearch = termToSearch.trim();
+
+        if (cleanSearch.length > 0) {
+          endpointUrl = `${API_URL}/products/${encodeURIComponent(
+            cleanSearch
+          )}?businessId=${user.businessId}`;
+        } else {
+          endpointUrl = `${API_URL}/products/business/${user.businessId}?page=${pageToFetch}&limit=${pageSize}`;
+        }
+
+        const res = await fetch(endpointUrl, { credentials: "include" });
+
+        if (!res.ok) {
+          throw new Error("Error al obtener el catálogo de productos");
+        }
+
+        const responseJson: ProductsResponse = await res.json();
+
+        const fetchedList = Array.isArray(responseJson)
+          ? responseJson
+          : responseJson.data || [];
+
+        setProducts(fetchedList);
+
+        if (responseJson.pagination) {
+          setPaginationInfo(responseJson.pagination);
+        } else {
+          setPaginationInfo(null);
+        }
+      } catch (err: any) {
+        setError(err.message || "No se pudieron cargar los productos");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.businessId, pageSize]
+  );
+
+  // Reset y carga inicial
   useEffect(() => {
     if (!isOpen) {
       setSelectedProduct(null);
@@ -50,47 +118,33 @@ export function StockEntryModal({
       setQuantity("");
       setReason("");
       setError(null);
+      setCurrentPage(1);
       return;
     }
 
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+    fetchProductsData(1, "");
+  }, [isOpen, fetchProductsData]);
 
-        const res = await fetch(`${API_URL}/products`, {
-          credentials: "include",
-        });
+  // Manejo de búsqueda por formulario
+  const handleExecuteSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchProductsData(1, searchQuery);
+  };
 
-        if (!res.ok) {
-          throw new Error("Error al obtener los productos");
-        }
+  // Cambio de página
+  const handlePageTransition = (newPage: number) => {
+    if (newPage < 1) return;
+    if (paginationInfo && newPage > paginationInfo.totalPages) return;
+    setCurrentPage(newPage);
+    fetchProductsData(newPage, searchQuery);
+  };
 
-        const responseJson: ProductsResponse = await res.json();
-        setProducts(responseJson.data);
-      } catch (err: any) {
-        setError(err.message || "No se pudieron cargar los productos");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [isOpen]);
-
-  // Filtro de productos
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [products, searchQuery]);
-
-  // Seleccionar producto (Permite seleccionar incluso si stock es 0)
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
   };
 
-  // Submit para ingresar stock
+  // Enviar el registro de entrada
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -108,18 +162,21 @@ export function StockEntryModal({
     try {
       setSubmitting(true);
 
-      const response = await fetch(`${API_URL}/products/stock-entry`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: qtyNumber,
-          productId: selectedProduct.id,
-          reason: reason.trim(),
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}/products/stock-entry?businessId=${user?.businessId}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            quantity: qtyNumber,
+            productId: selectedProduct.id,
+            reason: reason.trim(),
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -160,36 +217,54 @@ export function StockEntryModal({
 
         {/* Cuerpo */}
         <div className="dark-modal-body">
-          {/* Buscador */}
-          <div className="search-group">
-            <input
-              type="text"
-              className="dark-input search-input"
-              placeholder="Escribe el nombre del producto..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+          {/* Buscador de productos con clases exclusivas de Entrada */}
+          <form
+            className="ingress-query-sanctuary"
+            onSubmit={handleExecuteSearch}
+          >
+            <div className="search-group">
+              <label htmlFor="modal-entry-search">Buscar Producto</label>
+              <div className="ingress-search-wrapper">
+                <input
+                  id="modal-entry-search"
+                  type="text"
+                  className="dark-input ingress-filtering-input"
+                  placeholder="Escribe el nombre del producto..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="portal-fetch-button"
+                  disabled={loading}
+                >
+                  {loading ? "Buscando..." : "Buscar"}
+                </button>
+              </div>
+            </div>
+          </form>
 
           {/* Tarjetas de Productos */}
           <div className="cards-section">
             <span className="section-label">Seleccionar Producto</span>
 
             {loading ? (
-              <div className="dark-loading">Cargando productos...</div>
+              <div className="dark-loading">Cargando catálogo...</div>
             ) : error ? (
               <div className="dark-error">{error}</div>
-            ) : filteredProducts.length === 0 ? (
+            ) : products.length === 0 ? (
               <div className="no-results">No se encontraron productos</div>
             ) : (
               <div className="cards-grid">
-                {filteredProducts.map((product) => {
+                {products.map((product) => {
                   const isSelected = selectedProduct?.id === product.id;
 
                   return (
                     <div
                       key={product.id}
-                      className={`product-card ${isSelected ? "selected" : ""}`}
+                      className={`product-card ${
+                        isSelected ? "selected" : ""
+                      }`}
                       onClick={() => handleSelectProduct(product)}
                     >
                       <div className="card-header">
@@ -205,7 +280,7 @@ export function StockEntryModal({
                           ${product.price.toLocaleString()}
                         </p>
                         <p className="stock">
-                          Stock: <strong>{product.stock}</strong>
+                          Stock actual: <strong>{product.stock}</strong>
                         </p>
                       </div>
                     </div>
@@ -213,9 +288,37 @@ export function StockEntryModal({
                 })}
               </div>
             )}
+
+            {/* Paginador con clases exclusivas de Entrada */}
+            {paginationInfo && paginationInfo.totalPages > 1 && (
+              <div className="matrix-pagination-dock">
+                <button
+                  type="button"
+                  className="vector-pager-btn"
+                  disabled={!paginationInfo.hasPreviousPage || loading}
+                  onClick={() => handlePageTransition(currentPage - 1)}
+                >
+                  &laquo; Anterior
+                </button>
+
+                <span className="nexus-counter-display">
+                  Página <strong>{paginationInfo.page}</strong> de{" "}
+                  <strong>{paginationInfo.totalPages}</strong>
+                </span>
+
+                <button
+                  type="button"
+                  className="vector-pager-btn"
+                  disabled={!paginationInfo.hasNextPage || loading}
+                  onClick={() => handlePageTransition(currentPage + 1)}
+                >
+                  Siguiente &raquo;
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Formulario */}
+          {/* Formulario de entrada */}
           <form onSubmit={handleSubmit} className="entry-fields-form">
             <div className="selected-info">
               {selectedProduct ? (

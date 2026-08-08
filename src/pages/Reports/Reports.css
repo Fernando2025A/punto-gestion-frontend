@@ -1,0 +1,12 @@
+.dashboard-rpt-page-main-container {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  min-height: 100vh;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.dashboard-rpt-page-main-container * {
+  box-sizing: border-box;
+}

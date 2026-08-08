@@ -1,32 +1,37 @@
-import React, { useState } from 'react';
-import { 
-  BarChart2, 
-  UserPlus, 
-  User, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff 
-} from 'lucide-react';
-import './Register.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  BarChart2,
+  UserPlus,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import "./Register.css";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../../hooks/useToast";
+import { useAuth } from "../../hooks/useAuth";
 
 export function Register() {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const apiUrl = import.meta.env.VITE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { showToast } = useToast();
+  const { login } = useAuth();
 
   const navigate = useNavigate();
 
   const redirect = (path: string) => {
     navigate(`/${path}`);
-  }
+  };
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +43,13 @@ export function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Bloqueo si las contraseñas no coinciden
+    if (formData.password !== formData.confirmPassword) {
+      showToast("Las contraseñas no coinciden", "error");
+      return;
+    }
+
     const response = await fetch(`${apiUrl}/auth/register`, {
       method: "POST",
       credentials: "include",
@@ -46,22 +58,47 @@ export function Register() {
       },
       body: JSON.stringify({
         username: formData.fullName,
+        email: formData.email,
         password: formData.password,
-      })
-    })
+      }),
+    });
+
     if (response.ok) {
+      showToast("Registro exitoso", "success");
       await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          username: formData.fullName,
+          password: formData.password,
+        }),
       });
-      redirect("home");
+
+      const meResponse = await fetch(`${apiUrl}/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!meResponse.ok) {
+        showToast("No se pudo completar el inicio de sesión", "error");
+        return;
+      }
+
+      const meData = await meResponse.json();
+
+      login({ username: meData.username, email: meData?.email, id: meData.id, businessId: meData.ownedBusinesses[0].id });
+
+      navigate("/home", { replace: true });
     } else {
-      alert("Ha ocurrido un error");
+      showToast("No se ha podido crear la cuenta", "error");
     }
   };
+
+  // Comprobación de coincidencia para desactivar el botón si no coinciden
+  const passwordsMatch = formData.password === formData.confirmPassword;
 
   return (
     <div className="register-page-container">
@@ -73,25 +110,29 @@ export function Register() {
         </div>
         <div className="register-page-header-right">
           <span className="register-page-header-text">¿Ya tienes cuenta?</span>
-          <button onClick={() => redirect("login")} className="register-page-btn-header-login">Iniciar sesión</button>
+          <button
+            onClick={() => redirect("login")}
+            className="register-page-btn-header-login"
+          >
+            Iniciar sesión
+          </button>
         </div>
       </header>
 
       {/* Main Content / Register Form */}
       <main className="register-page-main-content">
         <div className="register-page-card">
-          {/* Card Header */}
           <div className="register-page-card-header">
             <div className="register-page-icon-wrapper">
               <UserPlus size={32} className="register-page-card-icon" />
             </div>
             <h1 className="register-page-card-title">Crear cuenta</h1>
             <p className="register-page-card-subtitle">
-              Únete a Punto Gestión y comienza a gestionar tu stock de forma eficiente.
+              Únete a Punto Gestión y comienza a gestionar tu stock de forma
+              eficiente.
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="register-page-form">
             {/* Nombre completo */}
             <div className="register-page-form-group">
@@ -133,7 +174,7 @@ export function Register() {
               <div className="register-page-input-wrapper">
                 <Lock size={18} className="register-page-input-icon" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   placeholder="Crea una contraseña"
@@ -158,7 +199,7 @@ export function Register() {
               <div className="register-page-input-wrapper">
                 <Lock size={18} className="register-page-input-icon" />
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
                   placeholder="Confirma tu contraseña"
@@ -172,24 +213,46 @@ export function Register() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label="Toggle confirm password visibility"
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
+              {/* Mensaje de error visual en vivo */}
+              {formData.confirmPassword && !passwordsMatch && (
+                <span
+                  style={{
+                    color: "#e53e3e",
+                    fontSize: "0.8rem",
+                    marginTop: "4px",
+                    display: "block",
+                  }}
+                >
+                  Las contraseñas no coinciden
+                </span>
+              )}
             </div>
 
             {/* Submit Button */}
-            <button type="submit" className="register-page-btn-submit">
+            <button
+              type="submit"
+              className="register-page-btn-submit"
+              disabled={
+                Boolean(formData.confirmPassword) && !passwordsMatch
+              }
+            >
               Registrarse
             </button>
           </form>
 
-          {/* Legal / Terms */}
           <p className="register-page-terms-text">
-            Al registrarte, aceptas nuestros{' '}
+            Al registrarte, aceptas nuestros{" "}
             <a href="#terminos" className="register-page-terms-link">
               Términos de servicio
-            </a>{' '}
-            y{' '}
+            </a>{" "}
+            y{" "}
             <a href="#privacidad" className="register-page-terms-link">
               Política de privacidad
             </a>

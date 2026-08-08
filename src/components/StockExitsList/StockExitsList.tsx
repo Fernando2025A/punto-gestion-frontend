@@ -79,12 +79,12 @@ export function StockExitsList() {
           {
             credentials: "include",
             signal: controller.signal,
-          }
+          },
         );
 
         if (!response.ok) {
           throw new Error(
-            `Error ${response.status}: No se pudieron obtener los datos.`
+            `Error ${response.status}: No se pudieron obtener los datos.`,
           );
         }
 
@@ -126,12 +126,12 @@ export function StockExitsList() {
         `${apiUrl}/movements/stock-exit?${queryParams.toString()}`,
         {
           credentials: "include",
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Error ${response.status}: No se pudieron obtener los datos.`
+          `Error ${response.status}: No se pudieron obtener los datos.`,
         );
       }
 
@@ -205,7 +205,11 @@ export function StockExitsList() {
           <h2>Salidas de Stock</h2>
           <p>Auditoría e historial de egresos y despasante de inventario.</p>
         </div>
-        <button className="se02-btn-actualizar" onClick={handleRefresh} disabled={loading}>
+        <button
+          className="se02-btn-actualizar"
+          onClick={handleRefresh}
+          disabled={loading}
+        >
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />{" "}
           <span>{loading ? "Cargando..." : "Actualizar"}</span>
         </button>
@@ -268,7 +272,9 @@ export function StockExitsList() {
                     </td>
                     <td>
                       <span className="se02-stock-values">
-                        <span className="se02-old-stock">{item.previousStock}</span>
+                        <span className="se02-old-stock">
+                          {item.previousStock}
+                        </span>
                         <span className="se02-stock-arrow">→</span>
                         <span className="se02-new-stock">{item.newStock}</span>
                       </span>
@@ -277,7 +283,9 @@ export function StockExitsList() {
                       {item.reason ? (
                         <span className="se02-reason-text">{item.reason}</span>
                       ) : (
-                        <span className="se02-reason-empty">Sin especificar</span>
+                        <span className="se02-reason-empty">
+                          Sin especificar
+                        </span>
                       )}
                     </td>
                     <td>
@@ -324,7 +332,9 @@ export function StockExitsList() {
                   <div className="se02-card-row">
                     <span className="se02-card-label">Flujo Stock:</span>
                     <div className="se02-stock-values">
-                      <span className="se02-old-stock">{item.previousStock}</span>
+                      <span className="se02-old-stock">
+                        {item.previousStock}
+                      </span>
                       <span className="se02-stock-arrow">→</span>
                       <span className="se02-new-stock">{item.newStock}</span>
                     </div>
@@ -348,7 +358,9 @@ export function StockExitsList() {
           {/* Controles de Paginación */}
           <div className="se02-pagination-container">
             <span className="se02-pagination-info">
-              Página <strong>{paginationMeta.page}</strong> de <strong>{paginationMeta.totalPages}</strong> ({paginationMeta.totalItems} registros)
+              Página <strong>{paginationMeta.page}</strong> de{" "}
+              <strong>{paginationMeta.totalPages}</strong> (
+              {paginationMeta.totalItems} registros)
             </span>
 
             <div className="se02-pagination-controls">
@@ -364,7 +376,7 @@ export function StockExitsList() {
                 disabled={currentPage === paginationMeta.totalPages || loading}
                 onClick={() =>
                   setCurrentPage((prev) =>
-                    Math.min(prev + 1, paginationMeta.totalPages)
+                    Math.min(prev + 1, paginationMeta.totalPages),
                   )
                 }
               >

@@ -1,0 +1,72 @@
+.sales-chart {
+    width: 100%;
+    background: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 18px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.sales-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.sales-chart-header h3 {
+    margin: 0;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.sales-chart-legend {
+    display: flex;
+    gap: 22px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #A8B0C2;
+    font-size: .9rem;
+}
+
+.legend-color {
+    width: 12px;
+    height: 3px;
+    border-radius: 999px;
+}
+
+.legend-color.income {
+    background: #22c55e;
+}
+
+.legend-color.expense {
+    background: #ef4444;
+}
+
+.recharts-tooltip-wrapper {
+    outline: none;
+}
+
+.recharts-default-tooltip {
+    border-radius: 12px !important;
+    border: 1px solid #293040 !important;
+    background: #111827 !important;
+}
+
+.recharts-cartesian-axis-tick text {
+    fill: #7A8498;
+    font-size: 13px;
+}
+
+.recharts-cartesian-grid line {
+    stroke: #202733;
+}
+
+.recharts-curve {
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, .15));
+}

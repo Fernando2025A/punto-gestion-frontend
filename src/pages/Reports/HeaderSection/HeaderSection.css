@@ -1,0 +1,58 @@
+.rpt-hdr-main-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rpt-hdr-primary-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.rpt-hdr-secondary-description-text {
+  font-size: 14px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.rpt-hdr-actions-controls-container {
+  display: flex;
+  gap: 12px;
+}
+
+.rpt-hdr-date-picker-dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #c9d1d9;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.rpt-hdr-export-data-action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #0d1117;
+  border: 1px solid #1f6beb;
+  color: #388bfd;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .rpt-hdr-main-header-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

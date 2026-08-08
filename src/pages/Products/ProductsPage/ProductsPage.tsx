@@ -20,6 +20,8 @@ import "./ProductsPage.css";
 import { DeleteProductModal } from "../../../components/modals/DeleteProductModal/DeleteProductModal";
 import { EditProductModal } from "../../../components/modals/EditProductModal/EditProductModal";
 import type { ProductFormData } from "../../../components/modals/ProductModal/ProductModal";
+import { useAuth } from "../../../hooks/useAuth";
+import { useToast } from "../../../hooks/useToast";
 
 export type ProductCategory =
   | "ELECTRONICS"
@@ -60,6 +62,9 @@ export function ProductsPage() {
     totalPages: 1,
   });
 
+  const { user } = useAuth();
+  const { showToast } = useToast();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,22 +88,23 @@ export function ProductsPage() {
   const handleDeleteProduct = async (productId: number) => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`${apiUrl}/products/${productId}`, {
+      const response = await fetch(`${apiUrl}/products/${productId}?businessId=${user?.businessId}`, {
         method: "DELETE",
         credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error("No se pudo eliminar el producto");
+        showToast("No se pudo eliminar el producto", "error");
+        return;
       }
-
+      showToast("Producto eliminado con éxito.", "success");
       // Actualización local: Remover el producto de la lista
       setProducts((prev) => prev.filter((p) => p.id !== productId));
 
       // Cerrar modal
       setProductToDelete(null);
-    } catch (err: any) {
-      alert(err.message || "Error al eliminar");
+    } catch {
+      showToast("Error al eliminar", "error");
     } finally {
       setIsDeleting(false);
     }
@@ -113,7 +119,7 @@ export function ProductsPage() {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/products/${productToEdit.id}`, {
+    const response = await fetch(`${apiUrl}/products/${productToEdit.id}?businessId=${user?.businessId}`, {
       method: "PATCH",
       credentials: "include",
       headers: {
@@ -142,13 +148,13 @@ export function ProductsPage() {
       )
     );
 
+    showToast("Producto actualizado con éxito.", "success");
     // 2. CERRAR MODAL Y LIMPIAR
     setIsEditModalOpen(false);
     setProductTotEdit(null);
 
-  } catch (error: any) {
-    console.error("Error en handleUpdateProduct:", error);
-    alert(error.message || "No se pudo actualizar el producto");
+  } catch {
+    showToast("No se pudo actualizar el producto", "error");
   } finally {
     setIsUpdating(false);
   }
@@ -171,7 +177,7 @@ export function ProductsPage() {
         }
 
         const response = await fetch(
-          `${apiUrl}/products?${params.toString()}`,
+          `${apiUrl}/products/business/${user?.businessId}?${params.toString()}`,
           {
             credentials: "include",
           },
@@ -192,7 +198,7 @@ export function ProductsPage() {
     };
 
     fetchProducts();
-  }, [currentPage, limit, selectedCategory, apiUrl]);
+  }, [currentPage, limit, selectedCategory, apiUrl, user?.businessId]);
 
   const setEditConfig = (product: ProductFormData, isOpen: boolean) => {
     setProductTotEdit(product);

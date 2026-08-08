@@ -314,3 +314,85 @@
   background-color: var(--bg-card);
   color: var(--text-primary);
 }
+
+/* Contenedor del buscador e input */
+.magnification-query-crucible {
+  margin-bottom: 1.25rem;
+}
+
+.quantum-search-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nexus-filtering-field {
+  flex: 1;
+}
+
+/* Botón de buscar con estilo rebuscado */
+.astral-trigger-button {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.astral-trigger-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+.astral-trigger-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Arco del Paginador Cronológico */
+.chronos-pagination-archway {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Botón del Paginador */
+.hyperion-navigator-btn {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hyperion-navigator-btn:hover:not(:disabled) {
+  background: #334155;
+  border-color: #64748b;
+}
+
+.hyperion-navigator-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Indicador Celestial de Página */
+.celestial-page-indicator {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.celestial-page-indicator strong {
+  color: #f8fafc;
+}

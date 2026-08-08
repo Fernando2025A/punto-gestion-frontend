@@ -1,0 +1,141 @@
+:root {
+  --dm-bg-overlay: rgba(0, 0, 0, 0.7); /* Fondo oscuro translúcido */
+  --dm-bg-card: #1f2937; /* Gris muy oscuro para la tarjeta */
+  --dm-border-card: #374151; /* Borde sutil para la tarjeta */
+  --dm-text-primary: #f3f4f6; /* Blanco grisáceo para el título */
+  --dm-text-secondary: #9ca3af; /* Gris claro para la descripción */
+  --dm-icon-bg: #111827; /* Fondo más oscuro para el icono */
+  --dm-icon-color: #60a5fa; /* Azul brillante para el icono */
+  --dm-btn-primary-bg: #3b82f6; /* Azul para el botón principal */
+  --dm-btn-primary-hover: #2563eb; /* Azul más oscuro al pasar el ratón */
+  --dm-btn-primary-text: #ffffff; /* Blanco para el texto del botón principal */
+  --dm-btn-secondary-bg: #374151; /* Gris oscuro para el botón secundario */
+  --dm-btn-secondary-hover: #4b5563; /* Gris menos oscuro al pasar el ratón */
+  --dm-btn-secondary-text: #e5e7eb; /* Gris claro para el texto del botón secundario */
+  --dm-btn-secondary-border: #4b5563; /* Borde sutil para el botón secundario */
+}
+
+.demo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--dm-bg-overlay);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: demoFadeIn 0.2s ease-out;
+}
+
+.demo-modal-card {
+  background: var(--dm-bg-card);
+  border: 1px solid var(--dm-border-card);
+  border-radius: 12px;
+  padding: 1.75rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: demoScaleIn 0.2s ease-out;
+}
+
+.demo-modal-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--dm-icon-bg);
+  color: var(--dm-icon-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+}
+
+.demo-modal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dm-text-primary);
+}
+
+.demo-modal-description {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.938rem;
+  line-height: 1.5;
+  color: var(--dm-text-secondary);
+}
+
+.demo-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.demo-btn {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+  border: 1px solid transparent;
+}
+
+.demo-btn:active {
+  transform: scale(0.98);
+}
+
+.demo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.demo-btn-secondary {
+  background-color: var(--dm-btn-secondary-bg);
+  color: var(--dm-btn-secondary-text);
+  border-color: var(--dm-btn-secondary-border);
+}
+
+.demo-btn-secondary:hover:not(:disabled) {
+  background-color: var(--dm-btn-secondary-hover);
+}
+
+.demo-btn-primary {
+  background-color: var(--dm-btn-primary-bg);
+  color: var(--dm-btn-primary-text);
+}
+
+.demo-btn-primary:hover:not(:disabled) {
+  background-color: var(--dm-btn-primary-hover);
+}
+
+.demo-spinner-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: demoSpin 0.8s linear infinite;
+}
+
+@keyframes demoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes demoScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes demoSpin {
+  to { transform: rotate(360deg); }
+}
