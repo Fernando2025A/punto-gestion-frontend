@@ -55,63 +55,6 @@
   margin-top: 8px;
 }
 
-.donut-chart-flex-layout-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 16px;
-}
-
-.donut-visual-svg-circle-container {
-  width: 140px;
-  height: 140px;
-}
-
-.donut-svg-ring-shape {
-  transform: rotate(-90deg);
-  border-radius: 50%;
-}
-
-.donut-legend-breakdown-details-list {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.donut-legend-row-item {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  color: #c9d1d9;
-}
-
-.legend-dot-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.dot-blue { background-color: #1f6beb; }
-.dot-green { background-color: #2ea043; }
-.dot-red { background-color: #da3633; }
-
-.legend-label-name { flex: 1; }
-.legend-value-amount { margin-right: 12px; font-weight: 500; }
-.legend-percentage-share { color: #8b949e; font-size: 12px; width: 30px; text-align: right; }
-
-.donut-total-summary-footer-row {
-  border-top: 1px solid #30363d;
-  padding-top: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.total-label-heading { font-weight: 600; color: #ffffff; }
-.total-value-amount { font-size: 16px; font-weight: 700; color: #ffffff; }
-
 @media (max-width: 768px) {
   .analytics-section-charts-dual-column-layout {
     display: flex;

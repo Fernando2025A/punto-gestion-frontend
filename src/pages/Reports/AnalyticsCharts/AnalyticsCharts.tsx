@@ -1,8 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './AnalyticsCharts.css';
-import SalesChart from '../SalesChart/SalesChart';
+import SalesChart from './SalesChart/SalesChart';
+import { DynamicDonutChart } from './DynamicDonutChart/DynamicDonutChart';
+import type { ChartData } from 'recharts/types/state/chartDataSlice';
+import { useAuth } from '../../../hooks/useAuth';
+import { useToast } from '../../../hooks/useToast';
+
+export interface ReportPeriod {
+  startDate: string;
+  endDate: string;
+}
+
+export interface ReportSummary {
+  totalSales: number;
+  totalPurchases: number;
+  totalExpenses: number;
+  totalOutflows: number;
+  costOfGoodsSold: number;
+  grossProfit: number;
+  netProfit: number;
+  salesCount: number;
+}
+
+export interface ReportsResponse {
+  period: ReportPeriod;
+  summary: ReportSummary;
+  chart: ChartData[];
+}
 
 export const AnalyticsCharts: React.FC = () => {
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  // 1. Guardamos el summary en el estado
+  const [summaryData, setSummaryData] = useState<ReportSummary>({
+    costOfGoodsSold: 0,
+    grossProfit: 0,
+    netProfit: 0,
+    salesCount: 0,
+    totalExpenses: 0,
+    totalOutflows: 0,
+    totalPurchases: 0,
+    totalSales: 0,
+  });
+
+  const { user } = useAuth(); // Incluye user.businessId 
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await fetch(
+          `${apiUrl}/reports/business-resume/${user?.businessId}?startDate=2026-08-05&endDate=2026-08-11`,
+          {
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          showToast('No se han podido obtener los datos', 'error');
+          return;
+        }
+
+        const data: ReportsResponse = await response.json();
+        
+        // 2. Actualizamos ambos estados
+        setChartData(data.chart);
+        setSummaryData(data.summary);
+      } catch {
+        showToast('Error al conectar con el servidor', 'error');
+      }
+    };
+
+    getData();
+  }, [apiUrl, user?.businessId, showToast]);
+
   return (
     <div className="analytics-section-charts-dual-column-layout">
       {/* Gráfico de Líneas */}
@@ -15,49 +86,12 @@ export const AnalyticsCharts: React.FC = () => {
           </div>
         </div>
 
-        {/* Mock de Gráficos mediante SVG */}
-        <SalesChart />
+        {/* Gráfico de ventas */}
+        <SalesChart datas={chartData} />
       </div>
 
-      {/* Gráfico Donut */}
-      <div className="analytics-box-card-container donut-chart-wrapper">
-        <span className="analytics-box-main-title">Resumen del período</span>
-        <div className="donut-chart-flex-layout-content">
-          <div className="donut-visual-svg-circle-container">
-            <svg viewBox="0 0 36 36" className="donut-svg-ring-shape">
-              <path strokeDasharray="52, 100" stroke="#1f6beb" strokeWidth="5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path strokeDasharray="30, 100" strokeDashoffset="-52" stroke="#2ea043" strokeWidth="5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path strokeDasharray="18, 100" strokeDashoffset="-82" stroke="#da3633" strokeWidth="5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-          </div>
-
-          <div className="donut-legend-breakdown-details-list">
-            <div className="donut-legend-row-item">
-              <span className="legend-dot-indicator dot-blue"></span>
-              <span className="legend-label-name">Ventas</span>
-              <span className="legend-value-amount">$2,150,400</span>
-              <span className="legend-percentage-share">52%</span>
-            </div>
-            <div className="donut-legend-row-item">
-              <span className="legend-dot-indicator dot-green"></span>
-              <span className="legend-label-name">Ganancias</span>
-              <span className="legend-value-amount">$1,250,400</span>
-              <span className="legend-percentage-share">30%</span>
-            </div>
-            <div className="donut-legend-row-item">
-              <span className="legend-dot-indicator dot-red"></span>
-              <span className="legend-label-name">Gastos</span>
-              <span className="legend-value-amount">$900,000</span>
-              <span className="legend-percentage-share">18%</span>
-            </div>
-
-            <div className="donut-total-summary-footer-row">
-              <span className="total-label-heading">Total</span>
-              <span className="total-value-amount">$2,150,400</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 3. Le pasamos el summary al DynamicDonutChart */}
+      <DynamicDonutChart summary={summaryData ?? undefined} />
     </div>
   );
 };
