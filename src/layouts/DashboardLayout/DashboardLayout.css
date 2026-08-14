@@ -15,7 +15,7 @@
 }
 
 /* ==================== ADAPTACIÓN MOBILE ==================== */
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
   .app-layout {
     flex-direction: column;
     width: 100%;

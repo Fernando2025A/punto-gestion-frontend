@@ -42,6 +42,17 @@ export function StockEntryModal({
 }: StockEntryModalProps) {
   const { showToast } = useToast();
   const { user } = useAuth();
+  useEffect(() => {
+      if (isOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "unset";
+      }
+  
+      return () => {
+        document.body.style.overflow = "unset";
+      };
+    }, [isOpen]);
 
   // Estados de productos y selección
   const [products, setProducts] = useState<Product[]>([]);
@@ -173,7 +184,7 @@ export function StockEntryModal({
           body: JSON.stringify({
             quantity: qtyNumber,
             productId: selectedProduct.id,
-            reason: reason.trim(),
+            notes: reason.trim(),
           }),
         }
       );

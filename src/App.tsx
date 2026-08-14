@@ -14,6 +14,8 @@ import { Suppliers } from "./pages/Suppliers/Suppliers";
 import { Settings } from "./pages/Settings/Settings";
 import { Reports } from "./pages/Reports/Reports";
 import { ToastProvider } from "./provider/ToastProvider"; // O ToastContext según como lo llamaste
+import { Employees } from "./pages/Employees/Employees";
+import { BusinessDashboard } from "./pages/Business/Business";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/employees" element={<Employees />} />
+            <Route path="/business" element={<BusinessDashboard />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>

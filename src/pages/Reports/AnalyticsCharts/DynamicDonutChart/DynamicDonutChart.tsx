@@ -21,17 +21,19 @@ export interface ReportSummary {
 interface DynamicDonutChartProps {
   data?: DonutDataItem[];
   summary?: ReportSummary;
+  title?: string;
 }
 
 const defaultData: DonutDataItem[] = [
   { label: 'Ventas', value: 150400, color: '#1f6beb' },
-  { label: 'Ganancias', value: 1250400, color: '#2ea043' },
-  { label: 'Gastos', value: 900000, color: '#da3633' },
+  { label: 'Costo de Ventas', value: 50400, color: '#2ea043' },
+  { label: 'Egresos Totales', value: 40000, color: '#da3633' },
 ];
 
 export const DynamicDonutChart: React.FC<DynamicDonutChartProps> = ({
   data,
   summary,
+  title = 'Resumen del período',
 }) => {
   // 1. Transformamos el summary a DonutDataItem[] o usamos los valores por defecto
   const chartData: DonutDataItem[] = useMemo(() => {
@@ -60,10 +62,20 @@ export const DynamicDonutChart: React.FC<DynamicDonutChartProps> = ({
     return defaultData;
   }, [data, summary]);
 
-  // 2. Calcular la suma total (usando solo valores positivos para el gráfico SVG)
-  const total = chartData.reduce((acc, item) => acc + Math.max(0, item.value), 0);
+  // 2. Suma para dibujar los arcos del SVG
+  const svgTotal = chartData.reduce((acc, item) => acc + Math.max(0, item.value), 0);
 
-  // 3. Formato de moneda estilo ARS
+  // 3. Determinamos la métrica del pie:
+  // Si viene `summary`, la cifra destacada es la Ganancia Neta (Net Profit).
+  // Si es un gráfico custom (`data`), usaremos la suma convencional.
+  const displayTotal = useMemo(() => {
+    if (summary) {
+      return summary.netProfit ?? (summary.totalSales - (summary.costOfGoodsSold + summary.totalOutflows));
+    }
+    return svgTotal;
+  }, [summary, svgTotal]);
+
+  // 4. Formato de moneda estilo ARS
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -75,16 +87,16 @@ export const DynamicDonutChart: React.FC<DynamicDonutChartProps> = ({
 
   return (
     <div className="analytics-box-card-container donut-chart-wrapper">
-      <span className="analytics-box-main-title">Resumen del período</span>
+      <span className="analytics-box-main-title">{title}</span>
       <div className="donut-chart-flex-layout-content">
         
         {/* Gráfico SVG Dinámico */}
         <div className="donut-visual-svg-circle-container">
           <svg viewBox="0 0 36 36" className="donut-svg-ring-shape">
-            {total > 0 &&
+            {svgTotal > 0 &&
               chartData.map((item, index) => {
                 const validValue = Math.max(0, item.value);
-                const percent = (validValue / total) * 100;
+                const percent = (validValue / svgTotal) * 100;
                 
                 const strokeDasharray = `${percent} ${100 - percent}`;
                 const strokeDashoffset = -cumulativePercent;
@@ -110,7 +122,7 @@ export const DynamicDonutChart: React.FC<DynamicDonutChartProps> = ({
         <div className="donut-legend-breakdown-details-list">
           {chartData.map((item, index) => {
             const validValue = Math.max(0, item.value);
-            const percentage = total > 0 ? Math.round((validValue / total) * 100) : 0;
+            const percentage = svgTotal > 0 ? Math.round((validValue / svgTotal) * 100) : 0;
 
             return (
               <div key={index} className="donut-legend-row-item">
@@ -125,9 +137,18 @@ export const DynamicDonutChart: React.FC<DynamicDonutChartProps> = ({
             );
           })}
 
+          {/* Pie con Ganancia Neta o Total según contexto */}
           <div className="donut-total-summary-footer-row">
-            <span className="total-label-heading">Total</span>
-            <span className="total-value-amount">{formatCurrency(total)}</span>
+            <span className="total-label-heading">
+              {summary ? 'Ganancia Neta' : 'Total'}
+            </span>
+            <span 
+              className={`total-value-amount ${
+                summary && displayTotal < 0 ? 'negative-balance' : ''
+              }`}
+            >
+              {formatCurrency(displayTotal)}
+            </span>
           </div>
         </div>
 

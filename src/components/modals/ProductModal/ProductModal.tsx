@@ -19,6 +19,7 @@ export interface ProductFormData {
   price: number | "";
   purchasePrice: number | "";
   stock: number | "";
+  minimumStock: number | "";
   category: ProductCategory;
   supplierId?: number;
   expirationDate?: string; // 👈 Campo opcional para fecha de vencimiento
@@ -66,6 +67,7 @@ const INITIAL_FORM: ProductFormData = {
   price: "",
   purchasePrice: "",
   stock: "",
+  minimumStock: "",
   category: "FOOD",
   supplierId: undefined,
   expirationDate: "",
@@ -306,6 +308,28 @@ export function ProductModal({
                 <span className="error-text">{errors.stock}</span>
               )}
             </div>
+          </div>
+
+          <div className="product-form-group">
+              <label htmlFor="minimumStock">Alerta de stock</label>
+              <div className="product-input-wrapper">
+                <Layers size={18} className="product-input-icon" />
+                <input
+                  type="number"
+                  id="minimumStock"
+                  name="minimumStock"
+                  placeholder="10"
+                  min="0"
+                  step="1"
+                  value={formData.minimumStock}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  className={errors.minimumStock ? "input-error" : ""}
+                />
+              </div>
+              {errors.minimumStock && (
+                <span className="error-text">{errors.minimumStock}</span>
+              )}
           </div>
 
           {/* Categoría */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SupplierSelect.css";
+import { useAuth } from "../../hooks/useAuth";
 
 // 1. Tipamos la respuesta exacta que envía tu backend
 export interface Supplier {
@@ -12,6 +13,10 @@ export interface Supplier {
   _count?: {
     products: number;
   };
+}
+
+interface SuppliersResponse {
+  data: Supplier[]
 }
 
 interface SupplierSelectProps {
@@ -35,6 +40,7 @@ export function SupplierSelect({
   const [suppliers, setSuppliers] = useState<Pick<Supplier, "id" | "name">[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -42,7 +48,7 @@ export function SupplierSelect({
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`${API_URL}/suppliers`, {
+        const res = await fetch(`${API_URL}/suppliers/business/${user?.businessId}?page=1&limit=100`, {
           credentials: "include",
         });
 
@@ -50,10 +56,10 @@ export function SupplierSelect({
           throw new Error("Error al obtener la lista de proveedores");
         }
 
-        const data: Supplier[] = await res.json();
+        const data: SuppliersResponse = await res.json();
 
         // Mapeamos para extraer únicamente id y name del array recibido
-        const mappedSuppliers = data.map(({ id, name }) => ({ id, name }));
+        const mappedSuppliers = data.data.map(({ id, name }) => ({ id, name }));
         setSuppliers(mappedSuppliers);
       } catch (err: any) {
         setError(err.message || "No se pudieron cargar los proveedores");
@@ -63,7 +69,7 @@ export function SupplierSelect({
     };
 
     fetchSuppliers();
-  }, []);
+  }, [user?.businessId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);

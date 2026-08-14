@@ -1,0 +1,257 @@
+/* Overlay oscuro con blur */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* Contenedor Principal (Tema Oscuro) */
+.modal-container.dark-theme {
+  background-color: #121824;
+  border: 1px solid #2a3447;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  color: #e2e8f0;
+  overflow: hidden;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #2a3447;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon-wrapper {
+  background-color: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  padding: 0.6rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-icon {
+  font-size: 1.25rem;
+}
+
+.header-title h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.header-title p {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0.15rem 0 0 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.close-btn:hover {
+  color: #f8fafc;
+  background-color: #1e293b;
+}
+
+/* Formulario */
+.modal-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.label-icon {
+  color: #818cf8;
+}
+
+.form-input {
+  background-color: #0b0f17;
+  border: 1px solid #2a3447;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  color: #f8fafc;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #6366f1;
+}
+
+.form-input::placeholder {
+  color: #475569;
+}
+
+.form-hint {
+  font-size: 0.725rem;
+  color: #64748b;
+}
+
+/* Selector de Rol Grid */
+.role-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.role-card {
+  background-color: #0b0f17;
+  border: 1px solid #2a3447;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.role-card:hover {
+  border-color: #475569;
+}
+
+.role-card.active {
+  border-color: #6366f1;
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.role-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.role-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.check-icon {
+  color: #6366f1;
+  font-size: 0.875rem;
+}
+
+.role-description {
+  font-size: 0.775rem;
+  color: #94a3b8;
+  margin: 0.3rem 0 0 0;
+  background-color: #0b0f17;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border-left: 3px solid #6366f1;
+}
+
+/* Footer */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid #2a3447;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.btn-primary {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

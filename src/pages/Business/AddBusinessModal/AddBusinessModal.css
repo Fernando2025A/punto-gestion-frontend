@@ -1,0 +1,249 @@
+:root {
+  --abm-color-bg-overlay: rgba(5, 8, 15, 0.75);
+  --abm-color-modal-bg: #111622;
+  --abm-color-modal-border: #1a202c;
+  --abm-color-text-primary: #ffffff;
+  --abm-color-text-secondary: #8c9ba5;
+  --abm-color-input-bg: #0a0d14;
+  --abm-color-input-border: #262f40;
+  --abm-color-input-focus-border: #2563eb;
+  --abm-color-btn-primary: #1d52d8;
+  --abm-color-btn-primary-hover: #1844b5;
+  --abm-color-btn-disabled: #2d3748;
+}
+
+/* Fondo oscuro / Overlay */
+.add-business-modal-backdrop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--abm-color-bg-overlay);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: addBusinessModalFadeIn 0.2s ease-out forwards;
+}
+
+/* Contenedor Principal del Modal */
+.add-business-modal-content-container {
+  background-color: var(--abm-color-modal-bg);
+  border: 1px solid var(--abm-color-modal-border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: addBusinessModalScaleUp 0.2s ease-out forwards;
+}
+
+/* Cabecera del Modal */
+.add-business-modal-header-wrapper {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--abm-color-modal-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.add-business-modal-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.add-business-modal-header-icon-badge {
+  background-color: rgba(29, 82, 216, 0.15);
+  color: #3b82f6;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.add-business-modal-main-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--abm-color-text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.add-business-modal-subtitle {
+  font-size: 0.825rem;
+  color: var(--abm-color-text-secondary);
+}
+
+.add-business-modal-close-icon-button {
+  background: transparent;
+  border: none;
+  color: var(--abm-color-text-secondary);
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.add-business-modal-close-icon-button:hover:not(:disabled) {
+  background-color: var(--abm-color-modal-border);
+  color: var(--abm-color-text-primary);
+}
+
+.add-business-modal-close-icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Formulario */
+.add-business-modal-form-element {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.add-business-modal-input-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.add-business-modal-input-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--abm-color-text-primary);
+}
+
+.add-business-modal-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.add-business-modal-input-left-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--abm-color-text-secondary);
+  pointer-events: none;
+}
+
+.add-business-modal-text-input {
+  width: 100%;
+  background-color: var(--abm-color-input-bg);
+  border: 1px solid var(--abm-color-input-border);
+  border-radius: 8px;
+  padding: 0.75rem 0.85rem 0.75rem 2.6rem;
+  font-size: 0.9rem;
+  color: var(--abm-color-text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-business-modal-text-input:focus {
+  border-color: var(--abm-color-input-focus-border);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.add-business-modal-text-input::placeholder {
+  color: #4b5563;
+}
+
+.add-business-modal-text-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer / Acciones */
+.add-business-modal-actions-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.add-business-modal-cancel-button {
+  background-color: transparent;
+  color: var(--abm-color-text-secondary);
+  border: 1px solid var(--abm-color-modal-border);
+  border-radius: 8px;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.add-business-modal-cancel-button:hover:not(:disabled) {
+  background-color: var(--abm-color-modal-border);
+  color: var(--abm-color-text-primary);
+}
+
+.add-business-modal-submit-confirm-button {
+  background-color: var(--abm-color-btn-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-business-modal-submit-confirm-button:hover:not(:disabled) {
+  background-color: var(--abm-color-btn-primary-hover);
+}
+
+.add-business-modal-submit-confirm-button:disabled,
+.add-business-modal-cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animaciones */
+.add-business-modal-spinner-animation {
+  animation: addBusinessModalSpin 1s linear infinite;
+}
+
+@keyframes addBusinessModalSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes addBusinessModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes addBusinessModalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

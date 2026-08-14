@@ -213,6 +213,10 @@
   cursor: not-allowed;
 }
 
+.footer-info-icon-badge-edit {
+  color: rgb(255, 208, 0);
+  font-weight: 200;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

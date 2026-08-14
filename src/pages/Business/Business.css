@@ -1,0 +1,261 @@
+:root {
+  --bd-color-bg-dark: #0a0d14;
+  --bd-color-card-bg: #111622;
+  --bd-color-card-border: #1a202c;
+  --bd-color-text-main: #ffffff;
+  --bd-color-text-muted: #8c9ba5;
+  --bd-color-blue-primary: #1d52d8;
+  --bd-color-blue-hover: #1844b5;
+  --bd-color-green-active-bg: #092c1d;
+  --bd-color-green-active-text: #22c55e;
+  --bd-color-gray-inactive-bg: #1c222e;
+  --bd-color-gray-inactive-text: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Envoltorio principal */
+.business-dashboard-main-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Header principal */
+.business-dashboard-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.business-dashboard-header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.business-dashboard-header-description {
+  color: var(--bd-color-text-muted);
+  font-size: 0.9rem;
+}
+
+.business-dashboard-primary-add-button {
+  background-color: var(--bd-color-blue-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.business-dashboard-primary-add-button:hover {
+  background-color: var(--bd-color-blue-hover);
+}
+
+/* Malla de Tarjetas */
+.business-dashboard-cards-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* Contenedor de Tarjeta */
+.business-card-container {
+  background-color: var(--bd-color-card-bg);
+  border: 1px solid var(--bd-color-card-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.business-card-header-info {
+  display: flex;
+  gap: 1rem;
+}
+
+.business-card-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.business-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.business-card-description {
+  color: var(--bd-color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* Badges de Estado */
+.business-card-status-container {
+  display: flex;
+}
+
+.business-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.business-card-badge--active {
+  background-color: var(--bd-color-green-active-bg);
+  color: var(--bd-color-green-active-text);
+}
+
+.business-card-badge--inactive {
+  background-color: var(--bd-color-gray-inactive-bg);
+  color: var(--bd-color-gray-inactive-text);
+}
+
+.business-card-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.business-card-badge-dot--active {
+  background-color: var(--bd-color-green-active-text);
+}
+
+.business-card-badge-dot--inactive {
+  background-color: var(--bd-color-gray-inactive-text);
+}
+
+/* Sección de Rol */
+.business-card-user-role-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.business-card-role-icon-container {
+  color: var(--bd-color-text-muted);
+}
+
+.business-card-role-text-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.business-card-role-label {
+  font-size: 0.75rem;
+  color: var(--bd-color-text-muted);
+}
+
+.business-card-role-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Botón de Acción de Tarjeta */
+.business-card-enter-action-button {
+  width: 100%;
+  background-color: var(--bd-color-blue-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: auto;
+}
+
+.business-card-enter-action-button:hover {
+  background-color: var(--bd-color-blue-hover);
+}
+
+.business-card-enter-action-button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+/* Banner de Solicitar Acceso (Footer) */
+.business-dashboard-access-request-banner {
+  background-color: var(--bd-color-card-bg);
+  border: 1px solid var(--bd-color-card-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.business-dashboard-banner-content-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.business-dashboard-banner-info-icon {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.business-dashboard-banner-heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.business-dashboard-banner-subtext {
+  color: var(--bd-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.business-dashboard-secondary-request-button {
+  background-color: transparent;
+  color: var(--bd-color-text-main);
+  border: 1px solid var(--bd-color-card-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.business-dashboard-secondary-request-button:hover {
+  background-color: #1a202c;
+}

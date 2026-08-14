@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../hooks/useToast";
 
 export function Login() {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const apiUrl = import.meta.env.VITE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -67,7 +67,8 @@ export function Login() {
         return;
       }
       showToast("No se ha podido iniciar sesión. Verifique usuario y contraseña", "error");
-    } catch {
+    } catch(error: unknown) {
+      console.log(error);
       showToast("Error al intentar conectar con el servidor", "error");
     }
   };

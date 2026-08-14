@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Smartphone,
   BookOpen,
@@ -10,13 +10,12 @@ import {
   Info,
 } from "lucide-react";
 import "./CategoriesPage.css";
+import { useAuth } from "../../../hooks/useAuth";
 
-// --- Tipos de datos según tu Backend ---
+// --- Tipos de datos según la respuesta real del Backend ---
 export interface CategoryResponse {
-  _count: {
-    category: number;
-  };
   category: string;
+  count: number;
 }
 
 export function CategoriesPage() {
@@ -24,15 +23,22 @@ export function CategoriesPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { user } = useAuth();
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  const fetchCategories = async () => {
+  // Función para reintentar desde el botón "Actualizar" / "Reintentar"
+  const handleRefresh = () => {
+    loadCategories();
+  };
+
+  const loadCategories = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${apiUrl}/inventory/categories`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${apiUrl}/inventory/categories?businessId=${user?.businessId}`,
+        { credentials: "include" }
+      );
 
       if (!response.ok) {
         throw new Error("Error al obtener las categorías");
@@ -50,43 +56,10 @@ export function CategoriesPage() {
   };
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`${apiUrl}/inventory/categories`, {
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al obtener las categorías");
-        }
-
-        const data: CategoryResponse[] = await response.json();
-        if (isMounted) {
-          setCategories(data);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(
-            err instanceof Error ? err.message : "Ocurrió un error inesperado"
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [apiUrl]);
+    if (user?.businessId) {
+      loadCategories();
+    }
+  }, [apiUrl, user?.businessId]);
 
   // Mapas de iconos y nombres legibles
   const renderCategoryIcon = (categoryName: string) => {
@@ -135,7 +108,7 @@ export function CategoriesPage() {
           type="button"
           className="catpage-btn-refresh"
           disabled={isLoading}
-          onClick={fetchCategories}
+          onClick={handleRefresh}
         >
           <RefreshCw
             size={16}
@@ -158,7 +131,7 @@ export function CategoriesPage() {
           <button
             type="button"
             className="catpage-btn-retry"
-            onClick={fetchCategories}
+            onClick={handleRefresh}
           >
             Reintentar
           </button>
@@ -172,7 +145,8 @@ export function CategoriesPage() {
         /* Grid de Tarjetas */
         <div className="catpage-grid">
           {categories.map((item) => {
-            const count = item._count.category;
+            // Soporta tanto la estructura nueva (item.count) como la antigua (item._count.category)
+            const count = item.count ?? (item as any)._count?.category ?? 0;
             return (
               <div key={item.category} className="catpage-card">
                 <div className="catpage-card-icon-wrapper">
@@ -183,7 +157,7 @@ export function CategoriesPage() {
                   <h3 className="catpage-card-title">
                     {formatCategoryName(item.category)}
                   </h3>
-                  
+
                   <div className="catpage-card-badge">
                     <Package size={16} />
                     <span>

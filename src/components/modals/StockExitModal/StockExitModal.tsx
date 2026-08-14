@@ -11,6 +11,40 @@ export interface Product {
   category?: string;
 }
 
+export type MovementReason = 
+  // Motivos de Salida (STOCK_EXIT)
+  | "SALE"          // Venta de producto
+  | "WASTE"         // Merma / Desperdicio / Vencimiento
+  | "DAMAGED"       // Producto dañado o roto
+  | "LOSS"          // Pérdida / Robo / Faltante de inventario
+  | "INTERNAL_USE"  // Uso interno del negocio
+  
+  // Motivos de Entrada (STOCK_ENTRY)
+  | "PURCHASE"      // Compra a proveedor
+  | "RETURN"        // Devolución de cliente
+  | "ADJUSTMENT";   // Ajuste positivo de inventario
+
+export type PaymentMethod = "CASH" | "DEBIT_CARD" | "CREDIT_CARD" | "TRANSFER" | "OTHER";
+
+const REASON_LABELS: Record<MovementReason, string> = {
+  SALE: "Venta de producto",
+  WASTE: "Merma / Desperdicio / Vencimiento",
+  DAMAGED: "Producto dañado o roto",
+  LOSS: "Pérdida / Robo / Faltante",
+  INTERNAL_USE: "Uso interno del negocio",
+  PURCHASE: "Compra a proveedor",
+  RETURN: "Devolución de cliente",
+  ADJUSTMENT: "Ajuste de inventario",
+};
+
+const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  CASH: "Efectivo",
+  DEBIT_CARD: "Tarjeta de Débito",
+  CREDIT_CARD: "Tarjeta de Crédito",
+  TRANSFER: "Transferencia",
+  OTHER: "Otro",
+};
+
 interface PaginationMeta {
   page: number;
   limit: number;
@@ -28,7 +62,13 @@ interface ProductsResponse {
 export interface StockExitModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (product: Product, quantity: number, reason: string) => void;
+  onSubmit?: (
+    product: Product,
+    quantity: number,
+    reason: MovementReason,
+    paymentMethod?: PaymentMethod,
+    notes?: string
+  ) => void;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -55,14 +95,28 @@ export function StockExitModal({
 
   // Estados del formulario
   const [quantity, setQuantity] = useState<number | "">("");
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState<MovementReason>("SALE");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CASH");
+  const [notes, setNotes] = useState<string>("");
 
   // Estados de carga y error
   const [loading, setLoading] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Petición de datos principal (Carga por página o por Búsqueda exacta)
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  // Petición de datos principal
   const fetchProductsData = useCallback(
     async (pageToFetch: number, termToSearch: string) => {
       if (!user?.businessId) return;
@@ -76,12 +130,10 @@ export function StockExitModal({
         const cleanSearch = termToSearch.trim();
 
         if (cleanSearch.length > 0) {
-          // Búsqueda por término específico
           endpointUrl = `${API_URL}/products/${encodeURIComponent(
             cleanSearch,
           )}?businessId=${user.businessId}`;
         } else {
-          // Petición paginada por defecto
           endpointUrl = `${API_URL}/products/business/${user.businessId}?page=${pageToFetch}&limit=${pageSize}`;
         }
 
@@ -93,7 +145,6 @@ export function StockExitModal({
 
         const responseJson: ProductsResponse = await res.json();
 
-        // Si la API devuelve un array directo o un objeto con data
         const fetchedList = Array.isArray(responseJson)
           ? responseJson
           : responseJson.data || [];
@@ -120,7 +171,9 @@ export function StockExitModal({
       setSelectedProduct(null);
       setSearchQuery("");
       setQuantity("");
-      setReason("");
+      setReason("SALE");
+      setPaymentMethod("CASH");
+      setNotes("");
       setError(null);
       setCurrentPage(1);
       return;
@@ -129,14 +182,12 @@ export function StockExitModal({
     fetchProductsData(1, "");
   }, [isOpen, fetchProductsData]);
 
-  // Manejador del botón de búsqueda
   const handleExecuteSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
     fetchProductsData(1, searchQuery);
   };
 
-  // Cambio de página en el paginador
   const handlePageTransition = (newPage: number) => {
     if (newPage < 1) return;
     if (paginationInfo && newPage > paginationInfo.totalPages) return;
@@ -187,7 +238,9 @@ export function StockExitModal({
           body: JSON.stringify({
             quantity: qtyNumber,
             productId: selectedProduct.id,
-            reason: reason.trim(),
+            reason,
+            paymentMethod: reason === "SALE" ? paymentMethod : undefined,
+            notes: notes.trim() || undefined,
           }),
         },
       );
@@ -198,7 +251,13 @@ export function StockExitModal({
       }
 
       if (onSubmit) {
-        onSubmit(selectedProduct, qtyNumber, reason.trim());
+        onSubmit(
+          selectedProduct,
+          qtyNumber,
+          reason,
+          reason === "SALE" ? paymentMethod : undefined,
+          notes.trim() || undefined
+        );
       }
 
       showToast("Salida de stock registrada con éxito", "success");
@@ -229,7 +288,6 @@ export function StockExitModal({
         </div>
 
         <div className="dark-modal-body">
-          {/* Formulario de Búsqueda con Nombres Rebuscados */}
           <form
             className="magnification-query-crucible"
             onSubmit={handleExecuteSearch}
@@ -256,7 +314,6 @@ export function StockExitModal({
             </div>
           </form>
 
-          {/* Listado de Tarjetas */}
           <div className="cards-section">
             <span className="section-label">Seleccionar Producto</span>
 
@@ -311,7 +368,6 @@ export function StockExitModal({
               </div>
             )}
 
-            {/* Paginador con Nombres Rebuscados */}
             {paginationInfo && paginationInfo.totalPages > 1 && (
               <div className="chronos-pagination-archway">
                 <button
@@ -373,15 +429,58 @@ export function StockExitModal({
               </div>
 
               <div className="form-group">
-                <label htmlFor="modal-reason">Motivo / Notas</label>
-                <input
+                <label htmlFor="modal-reason">Motivo *</label>
+                <select
                   id="modal-reason"
-                  type="text"
                   className="dark-input"
-                  placeholder="Ej. Venta, Mermas, Rotura"
                   value={reason}
                   disabled={!selectedProduct || selectedProduct.stock <= 0}
-                  onChange={(e) => setReason(e.target.value)}
+                  onChange={(e) => setReason(e.target.value as MovementReason)}
+                  required
+                >
+                  {(["SALE", "WASTE", "DAMAGED", "LOSS", "INTERNAL_USE"] as MovementReason[]).map(
+                    (reasonKey) => (
+                      <option key={reasonKey} value={reasonKey}>
+                        {REASON_LABELS[reasonKey]}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              {reason === "SALE" && (
+                <div className="form-group">
+                  <label htmlFor="modal-payment-method">Método de Pago</label>
+                  <select
+                    id="modal-payment-method"
+                    className="dark-input"
+                    value={paymentMethod}
+                    disabled={!selectedProduct || selectedProduct.stock <= 0}
+                    onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                  >
+                    {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map(
+                      (methodKey) => (
+                        <option key={methodKey} value={methodKey}>
+                          {PAYMENT_METHOD_LABELS[methodKey]}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="modal-notes">Notas (Opcional)</label>
+                <input
+                  id="modal-notes"
+                  type="text"
+                  className="dark-input"
+                  placeholder="Detalles o comentarios adicionales..."
+                  value={notes}
+                  disabled={!selectedProduct || selectedProduct.stock <= 0}
+                  onChange={(e) => setNotes(e.target.value)}
                 />
               </div>
             </div>

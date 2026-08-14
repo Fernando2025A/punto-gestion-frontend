@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
+import { BiStore } from "react-icons/bi";
 
 type Props = {
   setIsModalOpen: (state: boolean) => void;
@@ -99,6 +100,11 @@ export function Sidebar({ setIsModalOpen }: Props) {
           <NavLink to="/employees" className={getNavClass} onClick={closeMenu}>
             <Users size={18} />
             <span>Empleados</span>
+          </NavLink>
+
+          <NavLink to="/business" className={getNavClass} onClick={closeMenu}>
+            <BiStore size={18} />
+            <span>Negocios</span>
           </NavLink>
 
           <NavLink to="/settings" className={getNavClass} onClick={closeMenu}>

@@ -74,13 +74,13 @@ export default function SalesChart({ datas }: SalesChartProps) {
 
       <div className="sales-chart-header">
 
-        <h3>Ganancias vs Gastos</h3>
+        <h3>Ventas vs Gastos</h3>
 
         <div className="sales-chart-legend">
 
           <div className="legend-item">
             <span className="legend-color income" />
-            Ganancias
+            Ventas
           </div>
 
           <div className="legend-item">

@@ -1,8 +1,6 @@
-import { StockEntriesList } from "../../components/StockEntriesList/StockEntriesList"
+import { StockEntriesList } from "./StockEntriesList/StockEntriesList"
 
-type Props = {}
-
-export function Entries({}: Props) {
+export function Entries() {
   return (
     <StockEntriesList />
   )

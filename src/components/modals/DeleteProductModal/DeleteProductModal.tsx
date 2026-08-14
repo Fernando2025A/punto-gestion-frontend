@@ -30,7 +30,11 @@ export function DeleteProductModal({
         onClick={(e) => e.stopPropagation()} // Previene cerrar al hacer clic dentro
       >
         {/* Botón de Cierre Superior */}
-        <button className="delete-product-modal-close-btn" onClick={onClose} disabled={isDeleting}>
+        <button
+          className="delete-product-modal-close-btn"
+          onClick={onClose}
+          disabled={isDeleting}
+        >
           <X size={18} />
         </button>
 
@@ -44,19 +48,39 @@ export function DeleteProductModal({
           <h2 className="delete-product-modal-title">¿Eliminar producto?</h2>
           <p className="delete-product-modal-description">
             Estás a punto de eliminar el producto{" "}
-            <strong className="delete-product-modal-highlight">{product.name}</strong> (ID: #{product.id}).
-            Esta acción no se puede deshacer.
+            <strong className="delete-product-modal-highlight">
+              {product.name}
+            </strong>{" "}
+            (ID: #{product.id}). Esta acción no se puede deshacer. {"     "}
+
+            Al eliminarlo, este stock dejará de estar disponible y se registrará
+            como pérdida
+            <strong
+              className="delete-product-modal-highlight"
+              style={{ color: "red"}}
+            >
+              (-${Number(product.stock * product.purchasePrice).toLocaleString()}).
+            </strong>{" "}
+            
           </p>
 
           {/* Resumen del Producto */}
           <div className="delete-product-modal-product-summary">
             <div className="delete-product-modal-summary-item">
-              <span className="delete-product-modal-summary-label">Categoría:</span>
-              <span className="delete-product-modal-summary-value">{product.category}</span>
+              <span className="delete-product-modal-summary-label">
+                Categoría:
+              </span>
+              <span className="delete-product-modal-summary-value">
+                {product.category}
+              </span>
             </div>
             <div className="delete-product-modal-summary-item">
-              <span className="delete-product-modal-summary-label">Stock actual:</span>
-              <span className="delete-product-modal-summary-value">{product.stock} unidades</span>
+              <span className="delete-product-modal-summary-label">
+                Stock actual:
+              </span>
+              <span className="delete-product-modal-summary-value">
+                {product.stock} unidades
+              </span>
             </div>
           </div>
         </div>
@@ -75,7 +99,7 @@ export function DeleteProductModal({
             onClick={handleConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? "Eliminando..." : "Sí, eliminar"}
+            {isDeleting ? "Eliminando..." : "Eliminar"}
           </button>
         </div>
       </div>

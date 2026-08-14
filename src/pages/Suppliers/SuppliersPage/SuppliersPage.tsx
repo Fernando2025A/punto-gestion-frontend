@@ -16,6 +16,7 @@ import {
   SupplierModal,
   type SupplierFormData,
 } from "../../../components/modals/SupplierModal/SupplierModal";
+import { useAuth } from "../../../hooks/useAuth";
 
 export interface Supplier {
   id: number;
@@ -68,6 +69,7 @@ export function SuppliersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   // Función auxiliar para re-obtener datos en acciones manuales (crear/editar/eliminar)
   const refetchSuppliers = async (page: number, search: string) => {
@@ -81,7 +83,7 @@ export function SuppliersPage() {
         ...(search.trim() ? { search: search.trim() } : {}),
       });
 
-      const res = await fetch(`${API_URL}/suppliers?${queryParams.toString()}`, {
+      const res = await fetch(`${API_URL}/suppliers/business/${user?.businessId}?${queryParams.toString()}`, {
         credentials: "include",
       });
 
@@ -124,7 +126,7 @@ export function SuppliersPage() {
           ...(searchTerm.trim() ? { search: searchTerm.trim() } : {}),
         });
 
-        const res = await fetch(`${API_URL}/suppliers?${queryParams.toString()}`, {
+        const res = await fetch(`${API_URL}/suppliers/business/${user?.businessId}?${queryParams.toString()}`, {
           credentials: "include",
           signal: controller.signal,
         });
@@ -153,7 +155,7 @@ export function SuppliersPage() {
     return () => {
       controller.abort();
     };
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm, user?.businessId]);
 
   // Manejo de eliminación
   const handleDelete = async () => {
@@ -161,7 +163,7 @@ export function SuppliersPage() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`${API_URL}/suppliers/${selectedSupplier.id}`, {
+      const response = await fetch(`${API_URL}/suppliers/${selectedSupplier.id}?businessId=${user?.businessId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -196,7 +198,7 @@ export function SuppliersPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_URL}/suppliers/${selectedSupplier.id}`, {
+      const response = await fetch(`${API_URL}/suppliers/${selectedSupplier.id}?businessId=${user?.businessId}`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -226,7 +228,7 @@ export function SuppliersPage() {
   const handleCreate = async (formData: SupplierFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_URL}/suppliers`, {
+      const response = await fetch(`${API_URL}/suppliers?businessId=${user?.businessId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

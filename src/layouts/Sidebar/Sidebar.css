@@ -102,7 +102,7 @@
 }
 
 /* ==================== ESTILOS MOBILE (PANTALLAS PEQUEÑAS) ==================== */
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
   .sidebar {
     display: flex;
     width: 100%;

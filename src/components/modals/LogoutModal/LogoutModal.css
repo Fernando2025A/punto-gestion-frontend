@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(15, 23, 42, 0.6);
+  background-color: rgba(0, 0, 0, 0.75) !important;
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -16,13 +16,13 @@
 
 /* Tarjeta Modal */
 .logout-modal-container {
-  background-color: #ffffff;
+  background-color: #121212 !important;
   width: 90%;
   max-width: 400px;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #2a2a2a !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
   text-align: center;
   animation: scaleUp 0.2s ease-out;
 }
@@ -31,8 +31,8 @@
 .logout-modal-icon-container {
   width: 48px;
   height: 48px;
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -43,6 +43,7 @@
 .logout-modal-icon {
   width: 24px;
   height: 24px;
+  color: #ef4444 !important;
 }
 
 /* Textos */
@@ -50,13 +51,13 @@
   margin: 0 0 8px 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #f3f4f6 !important;
 }
 
 .logout-modal-description {
   margin: 0 0 24px 0;
   font-size: 0.875rem;
-  color: #64748b;
+  color: #9ca3af !important;
   line-height: 1.5;
 }
 
@@ -76,30 +77,31 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
+  border: none !important;
 }
 
 .logout-modal-btn-cancel {
-  background-color: #f1f5f9;
-  color: #475569;
+  background-color: #2a2a2a !important;
+  color: #d1d5db !important;
 }
 
 .logout-modal-btn-cancel:hover:not(:disabled) {
-  background-color: #e2e8f0;
+  background-color: #3f3f46 !important;
+  color: #ffffff !important;
 }
 
 .logout-modal-btn-confirm {
-  background-color: #dc2626;
-  color: #ffffff;
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
 }
 
 .logout-modal-btn-confirm:hover:not(:disabled) {
-  background-color: #b91c1c;
+  background-color: #b91c1c !important;
 }
 
 .logout-modal-btn-cancel:disabled,
 .logout-modal-btn-confirm:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 

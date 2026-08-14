@@ -38,8 +38,10 @@ export interface Product {
   name: string;
   category: ProductCategory;
   stock: number;
+  minimumStock: number;
   price: number; // Precio de venta
-  purchasePrice?: number; // Precio de compra (si el backend lo devuelve)
+  purchasePrice: number; // Precio de compra (si el backend lo devuelve)
+  expirationDate?: string;
   createdAt?: string;
   updatedAt?: string;
   inventoryId?: number;
@@ -88,10 +90,13 @@ export function ProductsPage() {
   const handleDeleteProduct = async (productId: number) => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`${apiUrl}/products/${productId}?businessId=${user?.businessId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${apiUrl}/products/${productId}?businessId=${user?.businessId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
       if (!response.ok) {
         showToast("No se pudo eliminar el producto", "error");
@@ -110,55 +115,58 @@ export function ProductsPage() {
     }
   };
 
- const handleUpdateProduct = async (formData: ProductFormData) => {
-  setIsUpdating(true);
+  const handleUpdateProduct = async (formData: ProductFormData) => {
+    setIsUpdating(true);
 
-  if (!productToEdit?.id) {
-    setIsUpdating(false);
-    return;
-  }
-
-  try {
-    const response = await fetch(`${apiUrl}/products/${productToEdit.id}?businessId=${user?.businessId}`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData?.name,
-        price: Number(formData?.price),
-        stock: Number(formData?.stock),
-        category: formData?.category,
-        purchasePrice: Number(formData?.purchasePrice),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Error al actualizar el producto");
+    if (!productToEdit?.id) {
+      setIsUpdating(false);
+      return;
     }
 
-    const updatedProduct = await response.json();
+    try {
+      const response = await fetch(
+        `${apiUrl}/products/${productToEdit.id}?businessId=${user?.businessId}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData?.name,
+            price: Number(formData?.price),
+            minimumStock: Number(formData?.minimumStock),
+            expirationDate: formData.expirationDate,
+            category: formData?.category,
+            purchasePrice: Number(formData?.purchasePrice),
+          }),
+        },
+      );
 
-    // 1. ACTUALIZAR ESTADO LOCAL: Reemplazamos el producto actualizado en la lista
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
-      )
-    );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al actualizar el producto");
+      }
 
-    showToast("Producto actualizado con éxito.", "success");
-    // 2. CERRAR MODAL Y LIMPIAR
-    setIsEditModalOpen(false);
-    setProductTotEdit(null);
+      const updatedProduct = await response.json();
 
-  } catch {
-    showToast("No se pudo actualizar el producto", "error");
-  } finally {
-    setIsUpdating(false);
-  }
-};
+      // 1. ACTUALIZAR ESTADO LOCAL: Reemplazamos el producto actualizado en la lista
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p,
+        ),
+      );
+
+      showToast("Producto actualizado con éxito.", "success");
+      // 2. CERRAR MODAL Y LIMPIAR
+      setIsEditModalOpen(false);
+      setProductTotEdit(null);
+    } catch {
+      showToast("No se pudo actualizar el producto", "error");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
   // --- Fetching de Datos Reales de la API ---
   useEffect(() => {
     const fetchProducts = async () => {
@@ -320,7 +328,31 @@ export function ProductsPage() {
                       </div>
                       <div className="stock-info">
                         <span>Stock: </span>
-                        <strong className="stock-count">{product.stock}</strong>
+                        <strong
+                          style={{
+                            color:
+                              product.stock > product.minimumStock * 2
+                                ? "#10b981"
+                                : product.stock > 0
+                                  ? "orange"
+                                  : "#ff3a3a",
+                          }}
+                          className="stock-count"
+                        >
+                          {product.stock}
+                        </strong>
+                      </div>
+                      <div className="stock-info">
+                        <span>Stock mínimo: </span>
+                        <strong className="stock-count">
+                          {product.minimumStock}
+                        </strong>
+                      </div>
+                      <div style={{ display: product.category === "FOOD" ? "flex" : "none"}} className="stock-info">
+                        <span>Vencimiento: </span>
+                        <strong className="stock-count">
+                          {" " + product.expirationDate?.split("T")[0].replace(/-/g, "/")}
+                        </strong>
                       </div>
                     </div>
                   </div>
@@ -351,8 +383,8 @@ export function ProductsPage() {
                             category: product.category,
                             name: product.name,
                             price: product.price,
-                            purchasePrice:
-                              product?.purchasePrice ?? product.price,
+                            minimumStock: product.minimumStock,
+                            purchasePrice: product.purchasePrice,
                             stock: product.stock,
                           },
                           !editModalOpen,

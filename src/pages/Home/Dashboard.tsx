@@ -99,7 +99,7 @@ export function Dashboard() {
         const result: DaySummary[] = await response.json();
         setData(result);
 
-        const resItems = await fetch(`${apiUrl}/inventory/low-stock?businessId=${user?.businessId}`, {
+        const resItems = await fetch(`${apiUrl}/reports/low-stock?businessId=${user?.businessId}`, {
           credentials: "include",
         });
 
@@ -176,6 +176,7 @@ export function Dashboard() {
       purchasePrice: data.purchasePrice,
       category: data.category,
       stock: data.stock,
+      minimumStock: data.minimumStock,
       supplierId: data.supplierId
     }
     try {
@@ -479,12 +480,12 @@ export function Dashboard() {
 
               <button className="action-card">
                 <div className="action-icon-wrapper yellow">
-                  <TrendingUp size={22} />
+                  <DollarSign size={22} />
                 </div>
                 <div className="action-text">
-                  <span className="action-title">Ver reportes</span>
+                  <span className="action-title">Registrar Gasto</span>
                   <span className="action-desc">
-                    Consultar reportes y estadísticas
+                    Registra gastos operativos como alquiler e impuestos
                   </span>
                 </div>
               </button>

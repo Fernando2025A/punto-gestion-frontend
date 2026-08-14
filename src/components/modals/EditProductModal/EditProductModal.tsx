@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Pencil, DollarSign, Layers, Tag } from "lucide-react";
+import { X, Pencil, DollarSign, Layers, Tag, Calendar } from "lucide-react";
 import './EditProductModal.css';
 import type { ProductFormData } from "../ProductModal/ProductModal";
 
@@ -67,6 +67,8 @@ export function EditProductModal({
     price: product?.price ?? "",
     purchasePrice: product?.purchasePrice ?? "",
     stock: product?.stock ?? "",
+    expirationDate: product?.expirationDate ?? "",
+    minimumStock: product?.minimumStock ?? "",
     category: product?.category || "FOOD",
   }));
   const [errors, setErrors] = useState<
@@ -111,8 +113,8 @@ export function EditProductModal({
       newErrors.purchasePrice = "El precio de compra debe ser mayor a 0.";
     }
 
-    if (formData.stock === "" || Number(formData.stock) < 0) {
-      newErrors.stock = "El stock debe ser igual o mayor a 0.";
+    if (formData.stock === "" || Number(formData.minimumStock) < 0) {
+      newErrors.minimumStock = "La alerta de stock debe ser igual o mayor a 0.";
     }
 
     setErrors(newErrors);
@@ -233,24 +235,24 @@ export function EditProductModal({
               </div>
 
               <div className="product-form-group">
-                <label htmlFor="edit-stock">Stock actual</label>
+                <label htmlFor="edit-stock">Alerta de stock</label>
                 <div className="product-input-wrapper">
                   <Layers size={18} className="product-input-icon" />
                   <input
                     type="number"
-                    id="edit-stock"
-                    name="stock"
-                    placeholder="55"
+                    id="edit-minimu-stock"
+                    name="minimumStock"
+                    placeholder="10"
                     min="0"
                     step="1"
-                    value={formData.stock}
+                    value={formData.minimumStock}
                     onChange={handleChange}
                     disabled={isLoading}
                     className={errors.stock ? "input-error" : ""}
                   />
                 </div>
-                {errors.stock && (
-                  <span className="error-text">{errors.stock}</span>
+                {errors.minimumStock && (
+                  <span className="error-text">{errors.minimumStock}</span>
                 )}
               </div>
             </div>
@@ -274,6 +276,30 @@ export function EditProductModal({
                   ))}
                 </select>
               </div>
+              {/* {formData.category === "FOOD" && (
+            <div className="product-form-group">
+              <label htmlFor="expirationDate">
+                Fecha de vencimiento <span style={{ color: "#64748b" }}>(Opcional)</span>
+              </label>
+              <div className="product-input-wrapper">
+                <Calendar style={{ color: "white"}} size={18} className="product-input-icon" />
+                <input
+                  type="date"
+                  id="expirationDate"
+                  name="expirationDate"
+                  value={formData.expirationDate}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          )} */}
+            </div>
+
+            <div>
+              <p className="footer-info-icon-badge-edit">
+                ⓘ Los ajustes de stock se deben registrar en entradas/salidas.
+              </p>
             </div>
 
             {/* Acciones */}

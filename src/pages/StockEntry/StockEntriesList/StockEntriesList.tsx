@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw, Search, ArrowDownCircle, Calendar, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import './StockEntriesList.css';
+import type { MovementReason } from '../../../components/modals/StockExitModal/StockExitModal';
+import { StockEntryModal } from '../../../components/modals/StockEntryModal/StockEntryModal';
+import { useAuth } from '../../../hooks/useAuth';
 
 export interface StockEntryMovement {
   id: number;
@@ -8,7 +11,8 @@ export interface StockEntryMovement {
   quantity: number;
   previousStock: number;
   newStock: number;
-  reason: string;
+  reason: MovementReason | null;
+  notes: string;
   details: string | null;
   createdAt: string;
   inventoryId: number;
@@ -40,6 +44,7 @@ export function StockEntriesList() {
   const [itemsPerPage] = useState<number>(10);
 
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { user } = useAuth();
 
   const handleRefresh = () => {
     fetchData(currentPage);
@@ -52,7 +57,7 @@ export function StockEntriesList() {
 
       // Endpoint para entradas de stock con parámetros de paginación
       const response = await fetch(
-        `${apiUrl}/movements/stock-entry?page=${page}&limit=${itemsPerPage}`,
+        `${apiUrl}/movements/stock-entry/${user?.businessId}?page=${page}&limit=${itemsPerPage}`,
         {
           credentials: 'include',
           signal,
@@ -97,7 +102,7 @@ export function StockEntriesList() {
     return () => {
       controller.abort();
     };
-  }, [apiUrl, currentPage]);
+  }, [apiUrl, currentPage, user?.businessId]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -113,9 +118,9 @@ export function StockEntriesList() {
   const filteredMovements = movements.filter((item) => {
     const term = searchTerm.toLowerCase();
     return (
-      item.reason?.toLowerCase().includes(term) ||
+      item.notes?.toLowerCase().includes(term) ||
       item.details?.toLowerCase().includes(term) ||
-      item.productId.toString().includes(term) ||
+      item.productId?.toString().includes(term) ||
       item.id.toString().includes(term)
     );
   });
@@ -208,7 +213,7 @@ export function StockEntriesList() {
                   <th>Cantidad</th>
                   <th>Stock Anterior / Nuevo</th>
                   <th>Motivo</th>
-                  <th>Detalles</th>
+                  <th>Notas</th>
                 </tr>
               </thead>
               <tbody>
@@ -241,7 +246,7 @@ export function StockEntriesList() {
                       )}
                     </td>
                     <td>
-                      <span className="se01-reason-empty">{item.details ?? '-'}</span>
+                      <span className="se01-reason-empty">{item.notes ?? '-'}</span>
                     </td>
                   </tr>
                 ))}
@@ -282,10 +287,10 @@ export function StockEntriesList() {
                     </div>
                   </div>
 
-                  {item.details && (
+                  {item.notes && (
                     <div className="se01-card-row">
-                      <span className="se01-card-label">Detalles:</span>
-                      <span className="se01-card-value">{item.details}</span>
+                      <span className="se01-card-label">Notas:</span>
+                      <span className="se01-card-value">{item.notes}</span>
                     </div>
                   )}
                 </div>
@@ -325,6 +330,8 @@ export function StockEntriesList() {
           </div>
         </>
       )}
+
+      
     </div>
   );
 }

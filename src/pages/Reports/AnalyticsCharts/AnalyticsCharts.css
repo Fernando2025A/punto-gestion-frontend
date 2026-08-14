@@ -3,6 +3,7 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
 .analytics-box-card-container {
@@ -55,9 +56,56 @@
   margin-top: 8px;
 }
 
-@media (max-width: 768px) {
+.analytics-date-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.analytics-date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.analytics-date-picker-input {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.825rem;
+  outline: none;
+  transition: all 0.2s ease;
+  color-scheme: dark; /* Fuerza el selector de calendario nativo a modo oscuro */
+}
+
+.analytics-date-picker-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.dynamic-donut-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 1080px) {
   .analytics-section-charts-dual-column-layout {
     display: flex;
     flex-direction: column;
+  }
+  .analytics-box-header-title-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .analytics-date-filter-wrapper {
+    width: 100%;
+    flex-wrap: wrap;
   }
 }

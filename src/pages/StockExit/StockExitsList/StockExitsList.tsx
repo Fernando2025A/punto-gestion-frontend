@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import "./StockExitsList.css";
+import { useAuth } from "../../../hooks/useAuth";
 
 export interface StockExitMovement {
   id: number;
@@ -52,6 +53,7 @@ export function StockExitsList() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { user } = useAuth();
 
   // Resetear a la página 1 al cambiar el filtro de búsqueda
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +77,7 @@ export function StockExitsList() {
         });
 
         const response = await fetch(
-          `${apiUrl}/movements/stock-exit?${queryParams.toString()}`,
+          `${apiUrl}/movements/stock-exit/${user?.businessId}?${queryParams.toString()}`,
           {
             credentials: "include",
             signal: controller.signal,
@@ -108,7 +110,7 @@ export function StockExitsList() {
     return () => {
       controller.abort();
     };
-  }, [apiUrl, currentPage, searchTerm]);
+  }, [apiUrl, currentPage, searchTerm, user?.businessId]);
 
   // 2. Función independiente para recargas manuales (botón Actualizar / Reintentar)
   const handleRefresh = async () => {
@@ -123,7 +125,7 @@ export function StockExitsList() {
       });
 
       const response = await fetch(
-        `${apiUrl}/movements/stock-exit?${queryParams.toString()}`,
+        `${apiUrl}/movements/stock-exit/${user?.businessId}?${queryParams.toString()}`,
         {
           credentials: "include",
         },

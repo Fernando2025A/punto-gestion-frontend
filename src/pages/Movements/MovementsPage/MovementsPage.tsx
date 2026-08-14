@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import "./MovementsPage.css";
+import { useAuth } from "../../../hooks/useAuth";
 
 // --- Tipos de datos según Backend ---
 export type MovementType =
@@ -61,6 +62,7 @@ export function MovementsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(20);
@@ -83,7 +85,7 @@ export function MovementsPage() {
         params.append("movementType", selectedType);
       }
 
-      const response = await fetch(`${apiUrl}/movements?${params.toString()}`, {
+      const response = await fetch(`${apiUrl}/movements/${user?.businessId}?${params.toString()}`, {
         credentials: "include",
       });
 
@@ -120,7 +122,7 @@ export function MovementsPage() {
         params.append("movementType", selectedType);
       }
 
-      const response = await fetch(`${apiUrl}/movements?${params.toString()}`, {
+      const response = await fetch(`${apiUrl}/movements/${user?.businessId}?${params.toString()}`, {
         credentials: "include",
       });
 
@@ -153,7 +155,7 @@ export function MovementsPage() {
   return () => {
     isMounted = false; // Cleanup flag
   };
-}, [apiUrl, currentPage, limit, selectedType]);
+}, [apiUrl, currentPage, limit, selectedType, user?.businessId]);
 
   // Resetear a la primera página al cambiar el tipo de filtro
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
