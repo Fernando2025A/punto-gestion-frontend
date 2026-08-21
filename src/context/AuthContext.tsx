@@ -5,6 +5,8 @@ export interface User {
   id: string;
   email?: string;
   businessId: number;
+  isOwner: boolean;
+  planName: string;
 }
 
 export interface AuthContextType {

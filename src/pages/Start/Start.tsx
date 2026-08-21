@@ -40,7 +40,7 @@ export function Start() {
         return;
       }
       const data: Credentials = await response.json();
-      console.log('Demo credentials:', data);
+      console.log(data);
       const resLogin = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         credentials: 'include',
@@ -52,6 +52,7 @@ export function Start() {
           password: data.password,
         }),
       });
+      console.log(resLogin);
       if (!resLogin.ok) {
         showToast('Error al iniciar sesión', 'error');
         return;
@@ -71,7 +72,10 @@ export function Start() {
       login({
         username: meData.username,
         email: meData?.email,
+        businessId: meData.activeBusinessId,
         id: meData.id,
+        planName: meData.ownedBusinesses[0].plan.name,
+        isOwner: false,
       });
 
       navigate('/home', { replace: true });

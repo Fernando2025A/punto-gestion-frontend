@@ -1,0 +1,348 @@
+/* Layout Principal */
+.admin-business-management-main-page-container {
+  background-color: #0b0f19;
+  color: #ffffff;
+  padding: 32px 24px;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Encabezado */
+.admin-business-management-header-title-container {
+  margin-bottom: 24px;
+}
+
+.admin-business-management-header-main-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #ffffff;
+}
+
+.admin-business-management-header-subtitle-text {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Tarjeta de Búsqueda */
+.admin-business-management-search-card-wrapper {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+}
+
+.admin-business-management-search-input-field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #d1d5db;
+  margin-bottom: 10px;
+}
+
+.admin-business-management-search-form-control-group {
+  display: flex;
+  gap: 12px;
+  max-width: 480px;
+}
+
+.admin-business-management-search-text-input-field {
+  flex: 1;
+  background-color: #0b0f19;
+  border: 1px solid #1f293d;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.admin-business-management-search-text-input-field:focus {
+  border-color: #2563eb;
+}
+
+.admin-business-management-search-submit-action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-business-management-search-submit-action-button:hover {
+  background-color: #1d4ed8;
+}
+
+.admin-business-management-search-submit-button-icon {
+  font-size: 16px;
+}
+
+/* Grilla de Tarjetas */
+.admin-business-management-cards-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 640px) {
+  .admin-business-management-cards-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-business-management-cards-grid-layout {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tarjeta de Negocio */
+.admin-business-management-single-card-item {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-business-management-card-image-thumbnail-container {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  background-color: #1f293d;
+}
+
+.admin-business-management-card-image-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-business-management-card-content-body-wrapper {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.admin-business-management-card-business-name-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.admin-business-management-card-business-description-text {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+  min-height: 36px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Fila del Badge */
+.admin-business-management-card-subscription-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.admin-business-management-card-subscription-status-label {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.admin-business-management-card-plan-pill-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 14px;
+}
+
+/* Variantes de Badges por Plan */
+.admin-business-management-card-plan-pill-tag--free {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.admin-business-management-card-plan-pill-tag--pro {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.admin-business-management-card-plan-pill-tag--pro\+ {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #a855f7;
+}
+
+/* Propietario */
+.admin-business-management-card-owner-details-wrapper {
+  border-top: 1px solid #1f293d;
+  padding-top: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-business-management-card-owner-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-business-management-card-owner-info-icon {
+  font-size: 16px;
+  color: #6b7280;
+  min-width: 16px;
+}
+
+.admin-business-management-card-owner-info-text-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.admin-business-management-card-owner-role-title {
+  color: #9ca3af;
+}
+
+.admin-business-management-card-owner-name-value {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.admin-business-management-card-owner-email-value {
+  font-size: 13px;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón Administrar Plan */
+.admin-business-management-card-action-administer-button {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid #1f293d;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-business-management-card-action-administer-button:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: #2563eb;
+}
+
+.admin-business-management-card-action-administer-icon {
+  font-size: 15px;
+}
+
+/* Paginación */
+.admin-business-management-pagination-controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-business-management-pagination-summary-text {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.admin-business-management-pagination-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-business-management-pagination-nav-button,
+.admin-business-management-pagination-page-number-button {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  color: #9ca3af;
+  min-width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-business-management-pagination-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-business-management-pagination-page-number-button--active-state {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Carga, Error y Estado Vacío */
+.admin-business-management-loading-state-container,
+.admin-business-management-error-state-container,
+.admin-business-management-empty-state-container {
+  padding: 48px;
+  text-align: center;
+  background-color: #111827;
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.admin-business-management-loading-state-text,
+.admin-business-management-empty-state-text {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.admin-business-management-error-state-text {
+  color: #ef4444;
+  font-size: 14px;
+}
+
+.admin-business-management-card-business-id-value {
+  font-size: 12px;
+  color: #3b82f6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: #0b0f19;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #1f293d;
+}

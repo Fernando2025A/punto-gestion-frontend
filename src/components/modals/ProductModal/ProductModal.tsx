@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, PackagePlus, DollarSign, Layers, Tag, Truck, Calendar } from "lucide-react";
+import { X, PackagePlus, DollarSign, Layers, Tag, Truck, Calendar, Image as ImageIcon } from "lucide-react";
 import { SupplierSelect } from "../../SupplierSelect/SupplierSelect";
 import "./ProductModal.css";
 
@@ -22,7 +22,8 @@ export interface ProductFormData {
   minimumStock: number | "";
   category: ProductCategory;
   supplierId?: number;
-  expirationDate?: string; // 👈 Campo opcional para fecha de vencimiento
+  expirationDate: string;
+  imageFile?: File | null; // 👈 Campo opcional para la imagen
 }
 
 export interface ProductSubmitOptions {
@@ -71,6 +72,7 @@ const INITIAL_FORM: ProductFormData = {
   category: "FOOD",
   supplierId: undefined,
   expirationDate: "",
+  imageFile: null,
 };
 
 export function ProductModal({
@@ -79,7 +81,6 @@ export function ProductModal({
   onSubmit,
   isLoading = false,
 }: ProductModalProps) {
-  // 🔒 Bloquear el scroll del cuerpo de la página cuando el modal está abierto
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -94,6 +95,7 @@ export function ProductModal({
 
   const [formData, setFormData] = useState<ProductFormData>(INITIAL_FORM);
   const [showSupplier, setShowSupplier] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProductFormData, string>>
   >({});
@@ -112,14 +114,13 @@ export function ProductModal({
       const updated = {
         ...prev,
         [name]:
-          name === "price" || name === "purchasePrice" || name === "stock"
+          name === "price" || name === "purchasePrice" || name === "stock" || name === "minimumStock"
             ? value === ""
               ? ""
               : Number(value)
             : value,
       };
 
-      // Si la categoría cambia y deja de ser FOOD, limpiamos expirationDate
       if (name === "category" && value !== "FOOD") {
         updated.expirationDate = "";
       }
@@ -130,6 +131,19 @@ export function ProductModal({
     if (errors[name as keyof ProductFormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, imageFile: file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, imageFile: null }));
+    setImagePreview(null);
   };
 
   const handleSupplierChange = (supplierId: number) => {
@@ -165,6 +179,10 @@ export function ProductModal({
       newErrors.stock = "El stock debe ser igual o mayor a 0.";
     }
 
+    if (formData.expirationDate === "") {
+      newErrors.expirationDate = "La fecha de vencimiento en alimentos es requerida.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -178,6 +196,7 @@ export function ProductModal({
     if (success !== false) {
       if (!keepData) {
         setFormData(INITIAL_FORM);
+        setImagePreview(null);
         setShowSupplier(false);
       }
       if (!keepOpen) {
@@ -311,25 +330,25 @@ export function ProductModal({
           </div>
 
           <div className="product-form-group">
-              <label htmlFor="minimumStock">Alerta de stock</label>
-              <div className="product-input-wrapper">
-                <Layers size={18} className="product-input-icon" />
-                <input
-                  type="number"
-                  id="minimumStock"
-                  name="minimumStock"
-                  placeholder="10"
-                  min="0"
-                  step="1"
-                  value={formData.minimumStock}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className={errors.minimumStock ? "input-error" : ""}
-                />
-              </div>
-              {errors.minimumStock && (
-                <span className="error-text">{errors.minimumStock}</span>
-              )}
+            <label htmlFor="minimumStock">Alerta de stock</label>
+            <div className="product-input-wrapper">
+              <Layers size={18} className="product-input-icon" />
+              <input
+                type="number"
+                id="minimumStock"
+                name="minimumStock"
+                placeholder="10"
+                min="0"
+                step="1"
+                value={formData.minimumStock}
+                onChange={handleChange}
+                disabled={isLoading}
+                className={errors.minimumStock ? "input-error" : ""}
+              />
+            </div>
+            {errors.minimumStock && (
+              <span className="error-text">{errors.minimumStock}</span>
+            )}
           </div>
 
           {/* Categoría */}
@@ -353,11 +372,47 @@ export function ProductModal({
             </div>
           </div>
 
-          {/* 📅 Selector de Fecha de Vencimiento (Solo cuando category === 'FOOD') */}
+          {/* 🖼️ Campo para Imagen de Producto (Opcional) */}
+          <div className="product-form-group">
+            <label htmlFor="imageFile">
+              Imagen del producto <span style={{ color: "#64748b" }}>(Opcional)</span>
+            </label>
+            <div className="product-image-upload-wrapper">
+              {imagePreview ? (
+                <div className="product-image-preview-container">
+                  <img src={imagePreview} alt="Previsualización" className="product-image-preview" />
+                  <button
+                    type="button"
+                    className="product-image-remove-btn"
+                    onClick={handleRemoveImage}
+                    disabled={isLoading}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <label htmlFor="imageFile" className="product-image-dropzone">
+                  <ImageIcon size={24} className="product-image-icon" />
+                  <span>Subir imagen (PNG, JPG)</span>
+                  <input
+                    type="file"
+                    id="imageFile"
+                    name="imageFile"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={isLoading}
+                    className="product-hidden-file-input"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* 📅 Selector de Fecha de Vencimiento */}
           {formData.category === "FOOD" && (
             <div className="product-form-group">
               <label htmlFor="expirationDate">
-                Fecha de vencimiento <span style={{ color: "#64748b" }}>(Opcional)</span>
+                Fecha de vencimiento
               </label>
               <div className="product-input-wrapper">
                 <Calendar size={18} className="product-input-icon" />
@@ -373,7 +428,7 @@ export function ProductModal({
             </div>
           )}
 
-          {/* Sección de Proveedor (Opcional) */}
+          {/* Sección de Proveedor */}
           <div className="product-form-group">
             <button
               type="button"

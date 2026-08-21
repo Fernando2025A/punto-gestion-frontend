@@ -1,0 +1,295 @@
+/* Layout Principal */
+.pricing-plans-main-section-wrapper {
+  background-color: #0b0f19;
+  color: #ffffff;
+  padding: 32px 24px;
+  border-radius: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Encabezado */
+.pricing-plans-header-content-container {
+  margin-bottom: 32px;
+}
+
+.pricing-plans-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.pricing-plans-header-crown-icon {
+  font-size: 24px;
+  color: #3b82f6;
+}
+
+.pricing-plans-header-main-heading {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+}
+
+.pricing-plans-header-subtitle-description {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Grid de Tarjetas */
+.pricing-plans-cards-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 1100px) {
+  .pricing-plans-cards-grid-layout {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tarjeta Individual */
+.pricing-plan-card-item-wrapper {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.pricing-plan-card-item-wrapper:hover {
+  transform: translateY(-2px);
+  border-color: #374151;
+}
+
+/* Badges */
+.pricing-plan-card-header-badge-container {
+  margin-bottom: 16px;
+}
+
+.pricing-plan-card-header-badge-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pricing-plan-card-item-wrapper--free-variant .pricing-plan-card-header-badge-pill {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.pricing-plan-card-item-wrapper--pro-variant .pricing-plan-card-header-badge-pill {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.pricing-plan-card-item-wrapper--pro-plus-variant .pricing-plan-card-header-badge-pill {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #a855f7;
+}
+
+/* Títulos y Precios */
+.pricing-plan-card-title-heading {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.pricing-plan-card-description-text {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0 0 24px 0;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.pricing-plan-card-price-display-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.pricing-plan-card-price-currency-amount {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pricing-plan-card-price-billing-cycle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Lista de Features */
+.pricing-plan-card-features-list-wrapper {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid #1f293d;
+  padding-top: 24px;
+}
+
+.pricing-plan-card-feature-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.pricing-plan-card-feature-icon-enabled {
+  font-size: 18px;
+  min-width: 18px;
+  margin-top: 2px;
+}
+
+.pricing-plan-card-item-wrapper--free-variant .pricing-plan-card-feature-icon-enabled {
+  color: #10b981;
+}
+
+.pricing-plan-card-item-wrapper--pro-variant .pricing-plan-card-feature-icon-enabled {
+  color: #10b981;
+}
+
+.pricing-plan-card-item-wrapper--pro-plus-variant .pricing-plan-card-feature-icon-enabled {
+  color: #a855f7;
+}
+
+.pricing-plan-card-feature-icon-disabled {
+  font-size: 18px;
+  min-width: 18px;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+.pricing-plan-card-feature-stacked-label-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-plan-card-feature-label-text {
+  color: #e5e7eb;
+}
+
+.pricing-plan-card-feature-status-text {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.pricing-plan-card-feature-status-text--included {
+  color: #10b981;
+}
+
+.pricing-plan-card-feature-status-text--not-included {
+  color: #6b7280;
+}
+
+/* Botones de Acción */
+.pricing-plan-card-action-button-element {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  margin-top: auto;
+  transition: opacity 0.2s ease;
+}
+
+.pricing-plan-card-action-button-element:hover {
+  opacity: 0.9;
+}
+
+.pricing-plan-card-action-button-element--current-plan {
+  background-color: transparent;
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.pricing-plan-card-action-button-element--pro-plan {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.pricing-plan-card-action-button-element--pro-plus-plan {
+  background-color: #8b5cf6;
+  color: #ffffff;
+}
+
+/* Banner de Información Inferior */
+.pricing-plans-footer-info-banner-container {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pricing-plans-footer-info-icon {
+  font-size: 20px;
+  color: #3b82f6;
+  min-width: 20px;
+}
+
+.pricing-plans-footer-info-text-message {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Loading & Error */
+.pricing-plans-section-loading-container,
+.pricing-plans-section-error-container {
+  padding: 48px;
+  text-align: center;
+  background-color: #0b0f19;
+  border-radius: 16px;
+}
+
+.pricing-plans-section-loading-text {
+  color: #9ca3af;
+}
+
+.pricing-plans-section-error-text {
+  color: #ef4444;
+}
+
+/* Resaltar la tarjeta del plan que el usuario tiene activo */
+.pricing-plan-card-item-wrapper--active-user-plan {
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+
+/* Estado del botón del plan actual */
+.pricing-plan-card-action-button-element--current-plan {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10b981;
+  color: #10b981;
+  cursor: default;
+  opacity: 0.8;
+}
+
+.pricing-plan-card-action-button-element:disabled {
+  cursor: not-allowed;
+}

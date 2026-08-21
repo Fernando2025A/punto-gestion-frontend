@@ -42,8 +42,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (response.ok) {
-          const data = await response.json(); // Se espera que la API devuelva p.ej. { username: "admin" }
-          setUser({ username: data.username, id: data.id, email: data?.email, businessId: data.ownedBusinesses[0].id });
+          const data = await response.json();
+          let isOwner: boolean;
+          const resAdmin = await fetch(`${apiUrl}/admin`, {
+            credentials: "include",
+          });
+          if (resAdmin.ok) {
+            isOwner = true;
+          } else {
+            isOwner = false;
+          }
+          setUser({ username: data.username, id: data.id, email: data?.email, businessId: data.activeBusinessId, isOwner: isOwner, planName: data.ownedBusinesses[0].plan.name });
           setIsAuthenticated(true);
         } else {
           setUser(null);

@@ -1,0 +1,195 @@
+.expense-modal-backdrop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(2, 6, 23, 0.80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+
+.expense-modal-card-container {
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #f8fafc;
+}
+
+.expense-modal-header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid #1e293b;
+  background-color: #0b0f19;
+}
+
+.expense-modal-header-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.expense-modal-close-icon-button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.expense-modal-close-icon-button:hover {
+  color: #f8fafc;
+  background-color: #1e293b;
+}
+
+.expense-modal-form-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #0f172a;
+}
+
+.expense-modal-form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expense-modal-field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+.expense-modal-select-input,
+.expense-modal-text-input,
+.expense-modal-datetime-input,
+.expense-modal-textarea-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  background-color: #1e293b;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.expense-modal-select-input option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.expense-modal-select-input:focus,
+.expense-modal-text-input:focus,
+.expense-modal-datetime-input:focus,
+.expense-modal-textarea-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.expense-modal-datetime-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+.expense-modal-textarea-input {
+  resize: vertical;
+}
+
+.expense-modal-textarea-input::placeholder,
+.expense-modal-text-input::placeholder {
+  color: #64748b;
+}
+
+.expense-modal-actions-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #1e293b;
+}
+
+.expense-modal-secondary-button {
+  padding: 10px 16px;
+  border: 1px solid #334155;
+  background-color: transparent;
+  color: #cbd5e1;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.expense-modal-secondary-button:hover {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.expense-modal-primary-button {
+  padding: 10px 18px;
+  border: none;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.expense-modal-primary-button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Estilo base para el selector de fecha y hora */
+.expense-modal-datetime-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  background-color: #1e293b;
+  box-sizing: border-box;
+  color-scheme: dark; /* Forza al navegador a renderizar el picker nativo en modo oscuro */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Efecto Focus */
+.expense-modal-datetime-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* Forzar que el icono de calendario se vea claro en navegadores Webkit (Chrome, Edge, Safari) */
+.expense-modal-datetime-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.9);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.expense-modal-datetime-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}

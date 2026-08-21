@@ -60,8 +60,19 @@ export function Login() {
         showToast("Inicio de sesión exitoso", "success");
         const meData = await meResponse.json();
 
+        const isAdmin = await fetch(`${apiUrl}/admin`, {
+          credentials: "include",
+        });
+
+        let isOwner: boolean;
+        if (isAdmin.ok) {
+          isOwner = true;
+        } else {
+          isOwner = false;
+        }
+
         // Guardamos los datos del usuario en el contexto
-        login({ username: meData.username, email: meData?.email, id: meData.id, businessId: meData.ownedBusinesses[0].id });
+        login({ username: meData.username, email: meData?.email, id: meData.id, businessId: meData.activeBusinessId, isOwner: isOwner, planName: meData.ownedBusinesses[0].plan.name });
 
         navigate("/home", { replace: true });
         return;

@@ -16,11 +16,14 @@ import { Reports } from "./pages/Reports/Reports";
 import { ToastProvider } from "./provider/ToastProvider"; // O ToastContext según como lo llamaste
 import { Employees } from "./pages/Employees/Employees";
 import { BusinessDashboard } from "./pages/Business/Business";
+import { AlertsProvider } from "./provider/AlertsProvier";
+import { Admin } from "./pages/Admin/Admin";
 
 function App() {
   return (
     // 1. Envolvemos toda la aplicación (o las rutas protegidas) con el Provider
     <ToastProvider>
+      <AlertsProvider>
       <Routes>
         {/* Rutas Públicas */}
         <Route path="/" element={<Start />} />
@@ -40,6 +43,7 @@ function App() {
             <Route path="/reports" element={<Reports />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/business" element={<BusinessDashboard />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
@@ -47,6 +51,7 @@ function App() {
         {/* Fallback para rutas no encontradas */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </AlertsProvider>
     </ToastProvider>
   );
 }

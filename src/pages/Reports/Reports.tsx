@@ -1,7 +1,6 @@
 import { HeaderSection } from './HeaderSection/HeaderSection';
 import { StatCardsGrid } from './StatCardsGrid/StatCardsGrid';
 import { AnalyticsCharts } from './AnalyticsCharts/AnalyticsCharts';
-import { InventoryListsGrid } from './InventoryListsGrid/InventoryListsGrid';
 import { FooterInfoBanner } from './FooterInfoBanner/FooterInfoBanner';
 import './Reports.css';
 
@@ -11,7 +10,6 @@ export function Reports() {
       <HeaderSection />
       <StatCardsGrid />
       <AnalyticsCharts />
-      <InventoryListsGrid />
       <FooterInfoBanner />
     </div>
   );

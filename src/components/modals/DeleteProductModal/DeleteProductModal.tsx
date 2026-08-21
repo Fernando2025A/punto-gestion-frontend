@@ -1,5 +1,5 @@
 import { AlertTriangle, X } from "lucide-react";
-import { type Product } from "../../../pages/Products/ProductsPage/ProductsPage";
+import { type Product } from "../../../pages/Products/Products";
 import "./DeleteProductModal.css";
 
 interface DeleteProductModalProps {

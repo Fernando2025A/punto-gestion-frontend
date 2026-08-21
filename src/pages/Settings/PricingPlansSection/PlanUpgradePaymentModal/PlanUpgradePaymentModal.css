@@ -1,0 +1,361 @@
+/* Backdrop y Overlay */
+.punto-gestion-plan-upgrade-modal-overlay-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(3, 7, 18, 0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+/* Diálogo */
+.punto-gestion-plan-upgrade-modal-dialog-container {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: puntoGestionModalPopIn 0.2s ease-out;
+}
+
+@keyframes puntoGestionModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Encabezado */
+.punto-gestion-plan-upgrade-modal-header-container {
+  padding: 20px 24px;
+  border-bottom: 1px solid #1f293d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.punto-gestion-plan-upgrade-modal-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.punto-gestion-plan-upgrade-modal-header-icon {
+  font-size: 24px;
+  color: #2563eb;
+}
+
+.punto-gestion-plan-upgrade-modal-header-heading-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.punto-gestion-plan-upgrade-modal-header-step-indicator-text {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 2px 0 0 0;
+}
+
+.punto-gestion-plan-upgrade-modal-close-icon-button {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.punto-gestion-plan-upgrade-modal-close-icon-button:hover {
+  background-color: #1f293d;
+  color: #ffffff;
+}
+
+/* Alerta de Error */
+.punto-gestion-plan-upgrade-modal-error-banner-container {
+  margin: 16px 24px 0 24px;
+  padding: 12px 16px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+.punto-gestion-plan-upgrade-modal-error-banner-icon {
+  font-size: 18px;
+  min-width: 18px;
+}
+
+/* Paso 1 Content */
+.punto-gestion-plan-upgrade-modal-step-one-content-wrapper {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-wrapper {
+  background-color: #0b0f19;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-icon {
+  font-size: 28px;
+  color: #3b82f6;
+  min-width: 28px;
+  margin-top: 2px;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-body-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-paragraph {
+  font-size: 13px;
+  color: #d1d5db;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.punto-gestion-plan-upgrade-modal-info-card-notice-paragraph strong {
+  color: #ffffff;
+}
+
+/* Paso 2 Formulario */
+.punto-gestion-plan-upgrade-modal-step-two-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.punto-gestion-plan-upgrade-modal-step-two-scrollable-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Tarjeta de Datos Bancarios */
+.punto-gestion-plan-upgrade-modal-bank-details-card-container {
+  background-color: #0b0f19;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-card-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-label-text {
+  color: #9ca3af;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-value-text {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-value-text--highlight {
+  color: #3b82f6;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-value-text--monospace {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-value-text--price {
+  color: #10b981;
+  font-size: 14px;
+}
+
+.punto-gestion-plan-upgrade-modal-bank-details-copy-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.punto-gestion-plan-upgrade-modal-copy-field-icon-button {
+  background: #1f293d;
+  border: none;
+  color: #9ca3af;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.punto-gestion-plan-upgrade-modal-copy-field-icon-button:hover {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+/* Campos de entrada */
+.punto-gestion-plan-upgrade-modal-form-inputs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.punto-gestion-plan-upgrade-modal-input-field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.punto-gestion-plan-upgrade-modal-input-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #d1d5db;
+}
+
+.punto-gestion-plan-upgrade-modal-required-asterisk {
+  color: #ef4444;
+}
+
+.punto-gestion-plan-upgrade-modal-text-input-element,
+.punto-gestion-plan-upgrade-modal-textarea-element {
+  background-color: #0b0f19;
+  border: 1px solid #1f293d;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.punto-gestion-plan-upgrade-modal-text-input-element:focus,
+.punto-gestion-plan-upgrade-modal-textarea-element:focus {
+  border-color: #2563eb;
+}
+
+/* Pie de página y Botones */
+.punto-gestion-plan-upgrade-modal-footer-actions-container {
+  padding: 16px 24px;
+  border-top: 1px solid #1f293d;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: #111827;
+}
+
+.punto-gestion-plan-upgrade-modal-cancel-button,
+.punto-gestion-plan-upgrade-modal-back-button {
+  background-color: transparent;
+  border: 1px solid #1f293d;
+  color: #9ca3af;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.punto-gestion-plan-upgrade-modal-cancel-button:hover,
+.punto-gestion-plan-upgrade-modal-back-button:hover:not(:disabled) {
+  background-color: #1f293d;
+  color: #ffffff;
+}
+
+.punto-gestion-plan-upgrade-modal-continue-button,
+.punto-gestion-plan-upgrade-modal-submit-button {
+  background-color: #2563eb;
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.punto-gestion-plan-upgrade-modal-continue-button:hover,
+.punto-gestion-plan-upgrade-modal-submit-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.punto-gestion-plan-upgrade-modal-submit-button:disabled,
+.punto-gestion-plan-upgrade-modal-back-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.punto-gestion-plan-upgrade-modal-spinner-icon {
+  animation: puntoGestionSpin 1s linear infinite;
+}
+
+@keyframes puntoGestionSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

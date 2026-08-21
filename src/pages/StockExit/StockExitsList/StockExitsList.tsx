@@ -7,9 +7,11 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
+  ArrowUpRight,
 } from "lucide-react";
 import "./StockExitsList.css";
 import { useAuth } from "../../../hooks/useAuth";
+import { StockExitModal } from "../../../components/modals/StockExitModal/StockExitModal";
 
 export interface StockExitMovement {
   id: number;
@@ -51,6 +53,8 @@ export function StockExitsList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const { user } = useAuth();
@@ -207,6 +211,15 @@ export function StockExitsList() {
           <h2>Salidas de Stock</h2>
           <p>Auditoría e historial de egresos y despasante de inventario.</p>
         </div>
+        <button onClick={() => setIsModalOpen(true)} className="action-card">
+          <div className="action-icon-wrapper purple">
+            <ArrowUpRight size={22} />
+          </div>
+          <div className="action-text">
+            <span className="action-title">Registrar salida</span>
+            <span className="action-desc">Descontar stock del inventario</span>
+          </div>
+        </button>
         <button
           className="se02-btn-actualizar"
           onClick={handleRefresh}
@@ -388,6 +401,10 @@ export function StockExitsList() {
           </div>
         </>
       )}
+      <StockExitModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

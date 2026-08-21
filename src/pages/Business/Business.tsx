@@ -6,10 +6,12 @@ import { useToast } from "../../hooks/useToast";
 import type { EmployeeRole, Permission } from "../Employees/Employees";
 import AddBusinessModal from "./AddBusinessModal/AddBusinessModal";
 
-interface BusinessItem {
+export interface BusinessItem {
   businessId: number;
   businessName: string;
   businessDescription: string | null;
+  imageUrl?: string;
+  businessLogoUrl?: string; // Por si el backend usa esta clave en lugar de imageUrl
   isOwner: boolean;
   role: EmployeeRole;
   isActive: boolean;
@@ -25,29 +27,6 @@ export const BusinessDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchBusinesses = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/business/my-access`, {
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          showToast(
-            "No se han podido obtener los negocios disponibles",
-            "error",
-          );
-          return;
-        }
-
-        const data: BusinessItem[] = await response.json();
-        setBusinesses(data);
-      } catch {
-        showToast("Error al conectar con el servidor", "error");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchBusinesses();
   }, [apiUrl, showToast]);
 
@@ -71,11 +50,22 @@ export const BusinessDashboard: React.FC = () => {
     }
   };
 
-  const handleSelectBusiness = (businessId: number) => {
+  const handleSelectBusiness = async (businessId: number) => {
+    const updatedUser = await fetch(`${apiUrl}/auth`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activeBusinessId: businessId,
+      })
+    })
+    const data = await updatedUser.json();
     if (user) {
       login({
         ...user,
-        businessId: businessId,
+        businessId: data.activeBusinessId,
         username: user.username ?? "",
         id: user.id ?? "",
         email: user.email ?? "",
@@ -137,6 +127,9 @@ export const BusinessDashboard: React.FC = () => {
           // Determinar si es el negocio actualmente activo en la sesión del usuario
           const isCurrentlyActive = user?.businessId === business.businessId;
 
+          // Obtener la URL del logo de cualquiera de las dos propiedades posibles
+          const logoUrl = business.imageUrl || business.businessLogoUrl;
+
           // Determinar la etiqueta de rol
           const roleDisplay = business.isOwner
             ? "Propietario"
@@ -145,12 +138,36 @@ export const BusinessDashboard: React.FC = () => {
           return (
             <div key={business.businessId} className="business-card-container">
               <div className="business-card-header-info">
+                {/* 👈 Renderiza la imagen si existe, o el ícono <Store /> de respaldo */}
                 <div
                   className="business-card-icon-wrapper"
-                  style={{ backgroundColor: "#2b3e80" }}
+                  style={{
+                    backgroundColor: logoUrl ? "transparent" : "#2b3e80",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  <Store size={28} color="#ffffff" />
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={`Logo de ${business.businessName}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      onError={(e) => {
+                        // En caso de error de carga en el cliente, muestra el ícono por defecto
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <Store size={28} color="#ffffff" />
+                  )}
                 </div>
+
                 <div className="business-card-text-details">
                   <h3 className="business-card-title">
                     {business.businessName}
@@ -190,37 +207,38 @@ export const BusinessDashboard: React.FC = () => {
 
               {/* Botón de Ingreso */}
               <button
-                 disabled={business.businessId === user?.businessId ? true : false}
+                disabled={business.businessId === user?.businessId}
                 className="business-card-enter-action-button"
                 onClick={() => handleSelectBusiness(business.businessId)}
               >
-                <LogIn size={18} style={{ display: business.businessId === user?.businessId ? "none" : "flex"}}/>
-                <Check size={18} style={{ display: business.businessId === user?.businessId ? "flex" : "none"}}/>
-                <span>{business.businessId === user?.businessId ? "Seleccionado" : "Seleccionar"}</span>
+                <LogIn
+                  size={18}
+                  style={{
+                    display:
+                      business.businessId === user?.businessId
+                        ? "none"
+                        : "flex",
+                  }}
+                />
+                <Check
+                  size={18}
+                  style={{
+                    display:
+                      business.businessId === user?.businessId
+                        ? "flex"
+                        : "none",
+                  }}
+                />
+                <span>
+                  {business.businessId === user?.businessId
+                    ? "Seleccionado"
+                    : "Seleccionar"}
+                </span>
               </button>
             </div>
           );
         })}
       </div>
-
-      {/* Banner Informativo Inferior */}
-      <footer className="business-dashboard-access-request-banner">
-        <div className="business-dashboard-banner-content-left">
-          <Info className="business-dashboard-banner-info-icon" size={28} />
-          <div className="business-dashboard-banner-text-group">
-            <h4 className="business-dashboard-banner-heading">
-              ¿No ves un negocio al que perteneces?
-            </h4>
-            <p className="business-dashboard-banner-subtext">
-              Pide al administrador que te invite o solicita acceso.
-            </p>
-          </div>
-        </div>
-        <button className="business-dashboard-secondary-request-button">
-          <Mail size={16} />
-          <span>Solicitar acceso</span>
-        </button>
-      </footer>
 
       <AddBusinessModal
         onSubmit={handleAddBusiness}

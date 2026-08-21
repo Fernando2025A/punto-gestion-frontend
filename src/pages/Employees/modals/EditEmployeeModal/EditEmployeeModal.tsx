@@ -31,7 +31,6 @@ const PERMISSION_GROUPS: Record<
     permissions: [
       { key: "REGISTER_STOCK_ENTRY", label: "Registrar entradas" },
       { key: "REGISTER_STOCK_EXIT", label: "Registrar salidas" },
-      { key: "ADJUST_STOCK", label: "Ajustar inventario" },
       { key: "VIEW_MOVEMENTS", label: "Ver movimientos" },
     ],
   },
@@ -39,9 +38,6 @@ const PERMISSION_GROUPS: Record<
     label: "Categorías",
     permissions: [
       { key: "VIEW_CATEGORIES", label: "Ver categorías" },
-      { key: "CREATE_CATEGORIES", label: "Crear categorías" },
-      { key: "UPDATE_CATEGORIES", label: "Editar categorías" },
-      { key: "DELETE_CATEGORIES", label: "Eliminar categorías" },
     ],
   },
   PROVEEDORES: {
@@ -72,11 +68,8 @@ const PERMISSION_GROUPS: Record<
     label: "Gestión de Empleados",
     permissions: [
       { key: "VIEW_EMPLOYEES", label: "Ver empleados" },
-      { key: "CREATE_EMPLOYEES", label: "Crear empleados" },
       { key: "UPDATE_EMPLOYEES", label: "Editar empleados" },
       { key: "DELETE_EMPLOYEES", label: "Eliminar empleados" },
-      { key: "MANAGE_EMPLOYEE_PERMISSIONS", label: "Administrar permisos" },
-      { key: "MANAGE_EMPLOYEE_ROLES", label: "Administrar roles" },
     ],
   },
   INVITACIONES: {
@@ -93,15 +86,7 @@ const PERMISSION_GROUPS: Record<
       { key: "VIEW_SETTINGS", label: "Ver configuración" },
       { key: "UPDATE_SETTINGS", label: "Actualizar configuración" },
       { key: "UPDATE_BUSINESS", label: "Editar negocio" },
-      { key: "DELETE_BUSINESS", label: "Eliminar negocio" },
       { key: "MANAGE_SUBSCRIPTION", label: "Gestionar suscripción" },
-    ],
-  },
-  PERFIL: {
-    label: "Mi Perfil",
-    permissions: [
-      { key: "UPDATE_PROFILE", label: "Actualizar perfil" },
-      { key: "CHANGE_PASSWORD", label: "Cambiar contraseña" },
     ],
   },
 };

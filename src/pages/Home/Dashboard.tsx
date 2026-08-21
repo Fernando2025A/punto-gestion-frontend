@@ -2,9 +2,6 @@ import {
   Package,
   ArrowDownRight,
   ArrowUpRight,
-  TrendingUp,
-  Bell,
-  ChevronDown,
   ShoppingBag,
   ShoppingCart,
   DollarSign,
@@ -23,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { StockExitModal } from "../../components/modals/StockExitModal/StockExitModal";
 import { useToast } from "../../hooks/useToast";
 import { StockEntryModal } from "../../components/modals/StockEntryModal/StockEntryModal";
+import { ExpenseModal, type CreateExpensePayloadInterface } from "./ExpenseModal/ExpenseModal";
 
 interface DaySummary {
   date: string; // Formato "YYYY-MM-DD"
@@ -43,12 +41,20 @@ interface InventoryItem {
   supplierId: number | null;
 }
 
+interface Limits {
+id: number;
+planId: number;
+type: string;
+value: number;
+}
+
 export function Dashboard() {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [resume, setResume] = useState({
@@ -60,6 +66,11 @@ export function Dashboard() {
   const [data, setData] = useState<DaySummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [limits, setLimits] = useState<Limits[]>([{}]);
+
+  const [productLimit, setProductLimit] = useState(1);
+  const [movementsLimit, setMovementsLimit] = useState(1);
 
   const [items, setItems] = useState<InventoryItem[]>([]);
 
@@ -116,9 +127,31 @@ export function Dashboard() {
       }
     };
 
+    const fetchLimits = async () => {
+      const resLimits = await fetch(`${apiUrl}/auth/me`, {
+          credentials: "include",
+        });
+
+        if (!resLimits.ok) {
+          showToast('No se pudieron obtener los límites de tu plan', 'error');
+          return;
+        }
+
+        const dataLimits = await resLimits.json();
+        setLimits(dataLimits.ownedBusinesses[0].plan.limits);
+        const Limits = dataLimits.ownedBusinesses[0].plan.limits;
+        const productsLimit = Limits.find(value => value.type === "PRODUCTS");
+        const movementsLimit = Limits.find(value => value.type === "MOVEMENTS");
+        if (!movementsLimit) return;
+        if (!productsLimit) return;
+        setProductLimit(productsLimit.value);
+        setMovementsLimit(movementsLimit.value);
+    }
+
     fetchMovements();
     getResume();
-  }, [apiUrl, user?.businessId]);
+    fetchLimits();
+  }, [apiUrl, user?.businessId, showToast]);
 
   // --- Dimensiones y cálculos dinámicos para el SVG ---
   const svgWidth = 500;
@@ -165,46 +198,62 @@ export function Dashboard() {
     return dayName.charAt(0).toUpperCase() + dayName.slice(1, 3);
   };
 
-  const handleCreateProduct = async (
-    data: ProductFormData,
-    options: { keepOpen: boolean; keepData: boolean }
-  ) => {
-    setIsSaving(true);
-    const validBody = {
-      name: data.name,
-      price: data.price,
-      purchasePrice: data.purchasePrice,
-      category: data.category,
-      stock: data.stock,
-      minimumStock: data.minimumStock,
-      supplierId: data.supplierId
-    }
-    try {
-      const response = await fetch(`${apiUrl}/products?businessId=${user?.businessId}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data.expirationDate === "" ? validBody : data),
-      });
+ const handleCreateProduct = async (
+  data: ProductFormData,
+  options: { keepOpen: boolean; keepData: boolean }
+) => {
+  setIsSaving(true);
 
-      if (response.ok) {
-        showToast("¡Producto creado con éxito!", "success");
-        if (!options.keepOpen) {
-          setIsProductModalOpen(false);
-        }
-        return true;
-      } else {
-        showToast("No se pudo crear el producto.", "error");
-        return false;
+  // 1. Crear el objeto FormData
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("price", String(data.price));
+  formData.append("purchasePrice", String(data.purchasePrice));
+  formData.append("category", data.category);
+  formData.append("stock", String(data.stock));
+  
+  if (data.minimumStock !== "") {
+    formData.append("minimumStock", String(data.minimumStock));
+  }
+
+  if (data.supplierId) {
+    formData.append("supplierId", String(data.supplierId));
+  }
+
+  if (data.expirationDate) {
+    formData.append("expirationDate", data.expirationDate);
+  }
+
+  // 2. Adjuntar el archivo si el usuario lo seleccionó
+  if (data.imageFile) {
+    formData.append("file", data.imageFile); // 'file' debe coincidir con la clave que espera tu backend en NestJS
+  }
+
+  try {
+    const response = await fetch(`${apiUrl}/products?businessId=${user?.businessId}`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (response.ok) {
+      showToast("¡Producto creado con éxito!", "success");
+      if (!options.keepOpen) {
+        setIsProductModalOpen(false);
       }
-    } catch (error) {
-      console.error("Error al enviar el producto:", error);
-      showToast("Error al conectar con el servidor", "error");
+      return true;
+    } else {
+      showToast("No se pudo crear el producto.", "error");
       return false;
-    } finally {
-      setIsSaving(false);
     }
-  };
+  } catch (error) {
+    console.error("Error al enviar el producto:", error);
+    showToast("Error al conectar con el servidor", "error");
+    return false;
+  } finally {
+    setIsSaving(false);
+  }
+};
   const handleConfirmLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -222,6 +271,35 @@ export function Dashboard() {
     }
   };
 
+ const handleCreateExpense = async (payload: CreateExpensePayloadInterface) => {
+  try {
+    const response = await fetch(`${apiUrl}/business/expense/${user?.businessId}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: payload.amount,
+        occurredAt: payload.occurredAt,
+        category: payload.category,
+        description: payload.description,
+      }),
+    });
+
+    if (!response.ok) {
+      showToast("No se ha podido registrar el gasto operativo", "error");
+      return;
+    }
+
+    showToast("Gasto operativo registrado exitosamente", "success");
+  } catch (error) {
+    console.error("Error al registrar el gasto:", error);
+    showToast("Error de conexión al registrar el gasto", "error");
+  }
+};
+
+
   return (
     <div className="dashboard-layout">
       {/* Main Container */}
@@ -231,18 +309,6 @@ export function Dashboard() {
           <div className="header-titles">
             <h1>¡Bienvenido, {user?.username}!</h1>
             <p>Aquí tienes un resumen de tu negocio.</p>
-          </div>
-
-          <div className="header-actions">
-            <div className="notification-icon">
-              <Bell size={20} />
-              <span className="badge">5</span>
-            </div>
-            <div className="user-profile">
-              <div className="avatar">AD</div>
-              <span className="user-name">{user?.username}</span>
-              <ChevronDown size={16} />
-            </div>
           </div>
         </header>
 
@@ -259,7 +325,7 @@ export function Dashboard() {
                 <span className="metric-title">Productos</span>
               </div>
               <div className="metric-body">
-                <h2 className="metric-value">{resume?.totalProducts}</h2>
+                <h2 className="metric-value">{resume?.totalProducts}/{productLimit}</h2>
               </div>
             </div>
 
@@ -478,12 +544,12 @@ export function Dashboard() {
                 </div>
               </button>
 
-              <button className="action-card">
+              <button onClick={() => setIsExpenseModalOpen(true)} className="action-card">
                 <div className="action-icon-wrapper yellow">
                   <DollarSign size={22} />
                 </div>
                 <div className="action-text">
-                  <span className="action-title">Registrar Gasto</span>
+                  <span className="action-title">Registrar gasto</span>
                   <span className="action-desc">
                     Registra gastos operativos como alquiler e impuestos
                   </span>
@@ -514,6 +580,12 @@ export function Dashboard() {
       <StockEntryModal 
         isOpen={stockEntryModal}
         onClose={() => setIsStockEntryModal(false)}
+      />
+
+      <ExpenseModal 
+        isOpen={isExpenseModalOpen}
+        onClose={() => setIsExpenseModalOpen(false)}
+        onSubmit={handleCreateExpense}
       />
     </div>
   );

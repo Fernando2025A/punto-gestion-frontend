@@ -14,10 +14,12 @@ import {
   Menu,
   X,
   Truck,
+  KeyRound,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
 import { BiStore } from "react-icons/bi";
+import { useAuth } from "../../hooks/useAuth";
 
 type Props = {
   setIsModalOpen: (state: boolean) => void;
@@ -25,6 +27,8 @@ type Props = {
 
 export function Sidebar({ setIsModalOpen }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { user } = useAuth();
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
@@ -105,6 +109,11 @@ export function Sidebar({ setIsModalOpen }: Props) {
           <NavLink to="/business" className={getNavClass} onClick={closeMenu}>
             <BiStore size={18} />
             <span>Negocios</span>
+          </NavLink>
+
+          <NavLink style={{ display: user?.isOwner ? "flex" : "none"}} to="/admin" className={getNavClass} onClick={closeMenu}>
+            <KeyRound color={"rgb(0, 255, 98)"} size={18} />
+            <span style={{ color: "rgb(0, 255, 98)"}}>Admin</span>
           </NavLink>
 
           <NavLink to="/settings" className={getNavClass} onClick={closeMenu}>

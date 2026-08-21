@@ -12,6 +12,7 @@ import {
   FiTrash2,
   FiChevronLeft,
   FiChevronRight,
+  FiUser,
 } from "react-icons/fi";
 import "./Employees.css";
 import { useAuth } from "../../hooks/useAuth";
@@ -33,9 +34,9 @@ import {
 export type EmployeeRole =
   | "OWNER"
   | "ADMIN"
-  | "CASHIER" // Cajero (solo ventas)
-  | "STOCKER" // Encargado de inventario
-  | "EMPLOYEE"; // General
+  | "CASHIER"
+  | "STOCKER"
+  | "EMPLOYEE";
 
 export type Permission =
   | "VIEW_PRODUCT"
@@ -80,6 +81,8 @@ interface User {
   id: string;
   username: string;
   email: string;
+  phoneNumber?: string;
+  imageUrl?: string;
 }
 
 export interface EmployeeData {
@@ -94,8 +97,18 @@ export interface EmployeeData {
   user: User;
 }
 
+export interface EmployeeMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 interface EmployeeResponse {
   data: EmployeeData[];
+  meta: EmployeeMeta;
 }
 
 export function Employees() {
@@ -103,88 +116,94 @@ export function Employees() {
   const [selectedRole, setSelectedRole] = useState("ALL");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
-  const [employees, setEmployees] = useState<EmployeeData[]>([
-    {
-      id: 1,
-      role: "OWNER",
-      permissions: [],
-      isActive: true,
-      userId: "",
-      businessId: 1,
-      createdAt: "",
-      updatedAt: "",
-      user: {
-        id: "",
-        username: "",
-        email: "",
-      },
-    },
-  ]);
-  const [employeesCount, setEmployeesCount] = useState(1);
+  const [employees, setEmployees] = useState<EmployeeData[]>([]);
+  const [meta, setMeta] = useState<EmployeeMeta>({
+    total: 0,
+    page: 1,
+    limit: 5,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
+
   const [createModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInvitesModalOpen, setIsInvitesModalOpen] = useState(false);
   const [invites, setInvites] = useState<ActiveInvite[]>([]);
   const [isEditEmployeeModalOpen, setIsEditEmployeeModalOpen] = useState(false);
-  const [employeeToEdit, setEmployeeToEdit] = useState<EmployeeData>({
-    id: 1,
-    role: "OWNER",
-    permissions: [],
-    isActive: true,
-    userId: "",
-    businessId: 1,
-    createdAt: "",
-    updatedAt: "",
-    user: {
-      id: "",
-      username: "",
-      email: "",
-    },
-  });
+  const [employeeToEdit, setEmployeeToEdit] = useState<EmployeeData | null>(null);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const { user } = useAuth();
   const { showToast } = useToast();
 
+  // Carga de empleados con filtros y paginación
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        `${apiUrl}/employees/${user?.businessId}`,
-        {
-          credentials: "include",
-        },
-      );
+    if (!user?.businessId) return;
 
-      if (!response.ok) {
-        showToast("No se pudo obtener los empleados", "error");
-        return;
+    const fetchFilteredEmployees = async () => {
+      let endpoint = `${apiUrl}/employees/${user.businessId}?page=${currentPage}&limit=5`;
+
+      if (selectedRole !== "ALL") {
+        endpoint += `&role=${selectedRole}`;
       }
-      const data: EmployeeResponse = await response.json();
-      setEmployees(data.data);
-      setEmployeesCount(data.data.length - 1);
+
+      if (selectedStatus === "ACTIVE") {
+        endpoint += `&isActive=true`;
+      } else if (selectedStatus === "INACTIVE") {
+        endpoint += `&isActive=false`;
+      }
+
+      try {
+        const response = await fetch(endpoint, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          showToast("No se pudo obtener los empleados", "error");
+          return;
+        }
+
+        const resData: EmployeeResponse = await response.json();
+        setEmployees(resData.data);
+        setMeta(resData.meta);
+      } catch {
+        showToast("Error al conectar con el servidor", "error");
+      }
     };
+
+    fetchFilteredEmployees();
+  }, [apiUrl, user?.businessId, currentPage, selectedRole, selectedStatus, showToast]);
+
+  // Carga inicial de invitaciones activas
+  useEffect(() => {
+    if (!user?.businessId) return;
+
     const fetchInvites = async () => {
-      const response = await fetch(
-        `${apiUrl}/invites?businessId=${user?.businessId}`,
-        {
-          credentials: "include",
-        },
-      );
+      try {
+        const response = await fetch(
+          `${apiUrl}/invites?businessId=${user?.businessId}`,
+          { credentials: "include" }
+        );
 
-      if (!response.ok) {
-        showToast("No se han podido obtener las invitaciones", "error");
-        return;
+        if (!response.ok) {
+          showToast("No se han podido obtener las invitaciones", "error");
+          return;
+        }
+
+        const data: ActiveInvite[] = await response.json();
+        setInvites(data);
+      } catch {
+        showToast("Error al cargar invitaciones", "error");
       }
-      const data: ActiveInvite[] = await response.json();
-      setInvites(data);
     };
-    fetchData();
+
     fetchInvites();
   }, [apiUrl, user?.businessId, showToast]);
 
   const formatDate = (isoString: string): string => {
+    if (!isoString) return "-";
     const date = new Date(isoString);
-
     return date
       .toLocaleString("es-ES", {
         day: "2-digit",
@@ -192,25 +211,31 @@ export function Employees() {
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true, // Formato AM/PM
+        hour12: true,
       })
-      .replace(",", ""); // Quita la coma opcional entre fecha y hora
+      .replace(",", "");
+  };
+
+  const handleRoleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedRole(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(e.target.value);
+    setCurrentPage(1);
   };
 
   const refreshInvites = async () => {
     const response = await fetch(
       `${apiUrl}/invites?businessId=${user?.businessId}`,
-      {
-        credentials: "include",
-      },
+      { credentials: "include" }
     );
 
-    if (!response.ok) {
-      showToast("No se han podido obtener las invitaciones", "error");
-      return;
+    if (response.ok) {
+      const data: ActiveInvite[] = await response.json();
+      setInvites(data);
     }
-    const data: ActiveInvite[] = await response.json();
-    setInvites(data);
   };
 
   const handleCreateInvite = async (data: CreateInviteFormData) => {
@@ -221,15 +246,9 @@ export function Employees() {
         {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            role: data.role,
-            expiresInMinutes: data.expiresInMinutes,
-            maxUses: data.maxUses,
-          }),
-        },
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
       );
 
       if (!res.ok) {
@@ -238,9 +257,9 @@ export function Employees() {
       }
       showToast("Código generado exitosamente", "success");
       setIsCreateModalOpen(false);
-      return;
+      refreshInvites();
     } catch {
-      showToast("Ha ocurrido un error al solicitar código");
+      showToast("Ha ocurrido un error al solicitar código", "error");
     } finally {
       setIsLoading(false);
     }
@@ -254,10 +273,7 @@ export function Employees() {
         {
           method: "DELETE",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
+        }
       );
 
       if (!res.ok) {
@@ -266,7 +282,6 @@ export function Employees() {
       }
       showToast("Código eliminado exitosamente", "success");
       refreshInvites();
-      return;
     } catch {
       showToast("Ha ocurrido un error al eliminar código", "error");
     } finally {
@@ -274,9 +289,7 @@ export function Employees() {
     }
   };
 
-  const handleUpdateEmployeePermission = async (
-    data: EditEmployeeUpdateData,
-  ) => {
+  const handleUpdateEmployeePermission = async (data: EditEmployeeUpdateData) => {
     setIsLoading(true);
     try {
       const res = await fetch(
@@ -284,15 +297,13 @@ export function Employees() {
         {
           method: "PATCH",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             permissions: data.permissions,
             role: data.role,
             isActive: data.isActive,
           }),
-        },
+        }
       );
 
       if (!res.ok) {
@@ -301,13 +312,22 @@ export function Employees() {
       }
       showToast("Empleado actualizado exitosamente", "success");
       setIsEditEmployeeModalOpen(false);
-      return;
+      setCurrentPage(1);
     } catch {
       showToast("Ha ocurrido un error inesperado", "error");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const filteredEmployeesBySearch = employees.filter((emp) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      emp.user.username.toLowerCase().includes(term) ||
+      emp.user.email.toLowerCase().includes(term) ||
+      emp.role.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="employees-page-container">
@@ -320,7 +340,6 @@ export function Employees() {
           </p>
         </div>
 
-        {/* Agrupamos los botones de acción */}
         <div className="header-actions">
           <button
             onClick={() => {
@@ -351,7 +370,7 @@ export function Employees() {
             </div>
             <span className="kpi-label">Total empleados</span>
           </div>
-          <div className="kpi-value">{employeesCount}</div>
+          <div className="kpi-value">{meta.total}</div>
           <div className="kpi-subtext">Empleados registrados</div>
         </div>
 
@@ -363,9 +382,9 @@ export function Employees() {
             <span className="kpi-label">Activos</span>
           </div>
           <div className="kpi-value">
-            {employees.filter((emp) => emp.isActive).length - 1}
+            {employees.filter((emp) => emp.isActive).length}
           </div>
-          <div className="kpi-subtext">Empleados activos</div>
+          <div className="kpi-subtext">En esta página</div>
         </div>
 
         <div className="kpi-card">
@@ -378,7 +397,7 @@ export function Employees() {
           <div className="kpi-value">
             {employees.filter((emp) => !emp.isActive).length}
           </div>
-          <div className="kpi-subtext">Empleados inactivos</div>
+          <div className="kpi-subtext">En esta página</div>
         </div>
 
         <div className="kpi-card">
@@ -391,7 +410,7 @@ export function Employees() {
           <div className="kpi-value">
             {new Set(employees.map((emp) => emp.role)).size}
           </div>
-          <div className="kpi-subtext">Roles definidos</div>
+          <div className="kpi-subtext">Roles en lista</div>
         </div>
       </div>
 
@@ -402,7 +421,7 @@ export function Employees() {
           <input
             type="text"
             className="filter-search-input"
-            placeholder="Buscar empleado por nombre, email o rol..."
+            placeholder="Buscar por nombre, email o rol..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -412,23 +431,24 @@ export function Employees() {
           <select
             className="filter-select"
             value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
+            onChange={handleRoleFilterChange}
           >
             <option value="ALL">Todos los roles</option>
-            <option value="Administrador">Administrador</option>
-            <option value="Vendedor">Vendedor</option>
-            <option value="Almacenero">Almacenero</option>
-            <option value="Contador">Contador</option>
+            <option value="OWNER">Propietario</option>
+            <option value="ADMIN">Administrador</option>
+            <option value="CASHIER">Cajero</option>
+            <option value="STOCKER">Almacenero</option>
+            <option value="EMPLOYEE">Empleado</option>
           </select>
 
           <select
             className="filter-select"
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={handleStatusFilterChange}
           >
             <option value="ALL">Todos los estados</option>
-            <option value="Activo">Activos</option>
-            <option value="Inactivo">Inactivos</option>
+            <option value="ACTIVE">Activos</option>
+            <option value="INACTIVE">Inactivos</option>
           </select>
 
           <button type="button" className="btn-filter-trigger">
@@ -437,7 +457,7 @@ export function Employees() {
         </div>
       </div>
 
-      {/* Tabla de Empleados */}
+      {/* Tabla de Empleados (Responsive con formato Tarjeta en móviles) */}
       <div className="table-responsive-container">
         <table className="employees-table">
           <thead>
@@ -451,10 +471,21 @@ export function Employees() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp) => (
+            {filteredEmployeesBySearch.map((emp) => (
               <tr key={emp.id}>
-                <td>
+                <td data-label="Empleado">
                   <div className="employee-info-cell">
+                    {emp.user.imageUrl ? (
+                      <img
+                        src={emp.user.imageUrl}
+                        alt={emp.user.username}
+                        className="employee-avatar-img"
+                      />
+                    ) : (
+                      <div className="employee-avatar-fallback">
+                        <FiUser />
+                      </div>
+                    )}
                     <div className="employee-name-group">
                       <div className="employee-name-row">
                         <span className="employee-name">
@@ -470,12 +501,18 @@ export function Employees() {
                     </div>
                   </div>
                 </td>
-                <td>
-                  <span className={`role-badge`}>{emp.role}</span>
+                <td data-label="Rol">
+                  <span className={`role-badge role-badge-${emp.role.toLowerCase()}`}>
+                    {emp.role}
+                  </span>
                 </td>
-                <td className="text-secondary">{emp.user.email}</td>
-                <td className="text-secondary">{23232}</td>
-                <td>
+                <td data-label="Email" className="text-secondary">
+                  {emp.user.email}
+                </td>
+                <td data-label="Teléfono" className="text-secondary">
+                  {emp.user.phoneNumber || "Sin teléfono"}
+                </td>
+                <td data-label="Estado">
                   <span
                     className={`status-pill ${
                       emp.isActive ? "status-active" : "status-inactive"
@@ -485,7 +522,7 @@ export function Employees() {
                     {emp.isActive ? "Activo" : "Inactivo"}
                   </span>
                 </td>
-                <td>
+                <td data-label="Acciones">
                   <div className="actions-cell-group">
                     <button
                       type="button"
@@ -500,8 +537,8 @@ export function Employees() {
                       }}
                       type="button"
                       onClick={() => {
-                        setIsEditEmployeeModalOpen(true);
                         setEmployeeToEdit(emp);
+                        setIsEditEmployeeModalOpen(true);
                       }}
                       className="action-icon-btn"
                       title="Editar"
@@ -526,44 +563,48 @@ export function Employees() {
         </table>
       </div>
 
-      {/* Paginador */}
+      {/* Paginador Dinámico */}
       <div className="employees-pagination-footer">
         <span className="pagination-info">
-          Mostrando 1 a {employees.length} de {employees.length - 1} empleados
+          Página {meta.page} de {meta.totalPages} ({meta.total} empleados en total)
         </span>
 
         <div className="pagination-controls">
           <button
             type="button"
             className="pagination-nav-btn"
-            disabled={currentPage === 1}
+            disabled={!meta.hasPrevPage}
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           >
             <FiChevronLeft />
           </button>
-          <button
-            type="button"
-            className={`pagination-page-btn ${currentPage === 1 ? "active" : ""}`}
-            onClick={() => setCurrentPage(1)}
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className={`pagination-page-btn ${currentPage === 2 ? "active" : ""}`}
-            onClick={() => setCurrentPage(2)}
-          >
-            2
-          </button>
+
+          {Array.from({ length: meta.totalPages }, (_, index) => index + 1).map(
+            (pageNum) => (
+              <button
+                key={pageNum}
+                type="button"
+                className={`pagination-page-btn ${
+                  currentPage === pageNum ? "active" : ""
+                }`}
+                onClick={() => setCurrentPage(pageNum)}
+              >
+                {pageNum}
+              </button>
+            )
+          )}
+
           <button
             type="button"
             className="pagination-nav-btn"
+            disabled={!meta.hasNextPage}
             onClick={() => setCurrentPage((prev) => prev + 1)}
           >
             <FiChevronRight />
           </button>
         </div>
       </div>
+
       <AddEmployeeModal
         onSubmit={handleCreateInvite}
         isOpen={createModalOpen}
@@ -580,12 +621,14 @@ export function Employees() {
         onRefresh={refreshInvites}
       />
 
-      <EditEmployeeModal
-        employee={employeeToEdit}
-        isOpen={isEditEmployeeModalOpen}
-        onClose={() => setIsEditEmployeeModalOpen(false)}
-        onSave={handleUpdateEmployeePermission}
-      />
+      {employeeToEdit && (
+        <EditEmployeeModal
+          employee={employeeToEdit}
+          isOpen={isEditEmployeeModalOpen}
+          onClose={() => setIsEditEmployeeModalOpen(false)}
+          onSave={handleUpdateEmployeePermission}
+        />
+      )}
     </div>
   );
 }
